@@ -47,7 +47,7 @@ private static final String PASS = "root";
 
 ou se preferir
 
-java -jar target/PDVex-vs1.jar
+java -jar target/PDVex-v1.jar
 
 🖥️ Tecnologias Utilizadas
 
