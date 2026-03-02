@@ -1,8 +1,9 @@
 // Peracio Dias
 //creativex sistemas
 package br.com.creativex.ui.login;
-import br.com.creativex.dao.usuario.UsuarioDAO;
+import br.com.creativex.config.AppFactory;
 import br.com.creativex.model.usuario.Usuario;
+import br.com.creativex.presentation.controller.UsuarioController;
 import javax.swing.*;
 import java.awt.*;
 
@@ -11,7 +12,7 @@ public class UsuarioForm extends JFrame {
     private JPasswordField txtSenha;
     private JComboBox<String> cbPerfil;
     private JButton btnSalvar;
-    private final UsuarioDAO dao = new UsuarioDAO();
+    private final UsuarioController controller = AppFactory.usuarioController();
 
     public UsuarioForm() {
         setTitle("Cadastro de Usuários - MERCADO-VS1");
@@ -48,7 +49,7 @@ public class UsuarioForm extends JFrame {
         u.setSenha(new String(txtSenha.getPassword()));
         u.setPerfil(cbPerfil.getSelectedItem().toString());
 
-        if (dao.salvar(u)) {
+        if (controller.salvar(u)) {
             JOptionPane.showMessageDialog(this, "Usuário cadastrado com sucesso!");
             dispose(); // Fecha a tela após cadastrar
         } else {

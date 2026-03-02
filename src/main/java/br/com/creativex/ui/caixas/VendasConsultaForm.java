@@ -1,13 +1,9 @@
 // Peracio Dias
 //creativex sistemas
 package br.com.creativex.ui.caixas;
-import br.com.creativex.infrastructure.persistence.repository.caixa.VendaDAO;
-import br.com.creativex.infrastructure.persistence.repository.caixa.VendaRepositoryJdbcAdapter;
-import br.com.creativex.domain.repository.VendaRepository;
-import br.com.creativex.application.caixa.FinalizeVendaUseCase;
-import br.com.creativex.presentation.controller.CaixaController;
-import br.com.creativex.util.Sessao;
-import br.com.creativex.db.Conexao;
+import br.com.creativex.config.AppFactory;
+import br.com.creativex.presentation.controller.VendaResumo;
+import br.com.creativex.presentation.controller.VendasConsultaController;
 import br.com.creativex.util.Sessao;
 import br.com.creativex.ui.HomeScreen;
 import br.com.creativex.ui.MainWindow;
@@ -15,8 +11,9 @@ import br.com.creativex.ui.MainWindow;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.sql.*;
+import java.sql.SQLException;
 import java.text.NumberFormat;
+import java.util.List;
 import java.util.Locale;
 
 public class VendasConsultaForm extends JPanel {
@@ -25,6 +22,7 @@ public class VendasConsultaForm extends JPanel {
     private DefaultTableModel model;
     private JButton btnCancelar, btnVoltar;
     private MainWindow mainWindow;
+    private final VendasConsultaController controller;
 
     private final NumberFormat nf =
             NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
@@ -32,6 +30,7 @@ public class VendasConsultaForm extends JPanel {
     public VendasConsultaForm() {
         setLayout(new BorderLayout(10, 10));
         this.mainWindow = (MainWindow) SwingUtilities.getWindowAncestor(this);
+        this.controller = AppFactory.vendasConsultaController();
         initComponents();
         carregarVendas();
         configurarEventos();
@@ -40,6 +39,7 @@ public class VendasConsultaForm extends JPanel {
     public VendasConsultaForm(MainWindow mainWindow) {
         setLayout(new BorderLayout(10, 10));
         this.mainWindow = mainWindow;
+        this.controller = AppFactory.vendasConsultaController();
         initComponents();
         carregarVendas();
         configurarEventos();
@@ -65,31 +65,18 @@ public class VendasConsultaForm extends JPanel {
     private void carregarVendas() {
         model.setRowCount(0);
 
-        String sql = """
-            SELECT v.id_venda, v.data_venda,
-                   u.nome,
-                   v.total_liquido,
-                   v.status
-            FROM tabela_vendas v
-            JOIN tabela_usuarios u ON v.id_usuario = u.id
-            ORDER BY v.data_venda DESC
-        """;
-
-        try (Connection conn = Conexao.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
+        try {
+            List<VendaResumo> vendas = controller.listarVendas();
+            for (VendaResumo venda : vendas) {
                 model.addRow(new Object[]{
-                        rs.getLong("id_venda"),
-                        rs.getTimestamp("data_venda"),
-                        rs.getString("nome"),
-                        nf.format(rs.getBigDecimal("total_liquido")),
-                        rs.getString("status")
+                        venda.getIdVenda(),
+                        venda.getDataVenda(),
+                        venda.getOperador(),
+                        nf.format(venda.getTotalLiquido()),
+                        venda.getStatus()
                 });
             }
-
-        } catch (SQLException e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
                     "Erro ao carregar vendas: " + e.getMessage());
         }
@@ -136,10 +123,6 @@ public class VendasConsultaForm extends JPanel {
         if (confirm != JOptionPane.YES_OPTION) return;
 
         try {
-            VendaDAO vendaDAO = new VendaDAO();
-            VendaRepository vendaRepo = new VendaRepositoryJdbcAdapter(vendaDAO);
-            FinalizeVendaUseCase finalizeUseCase = new FinalizeVendaUseCase(vendaRepo);
-            CaixaController controller = new CaixaController(finalizeUseCase, vendaRepo, vendaDAO);
             controller.cancelarVenda(idVenda, Sessao.getUsuarioLogado().getId());
 
             JOptionPane.showMessageDialog(this,
@@ -153,5 +136,4 @@ public class VendasConsultaForm extends JPanel {
         }
     }
 }
-
 

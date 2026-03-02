@@ -2,8 +2,9 @@
 //creativex sistemas
 package br.com.creativex.ui.cadastrousuario;
 
-import br.com.creativex.dao.usuario.UsuarioDAO;
+import br.com.creativex.config.AppFactory;
 import br.com.creativex.model.usuario.Usuario;
+import br.com.creativex.presentation.controller.UsuarioController;
 import br.com.creativex.ui.HomeScreen; // Import para voltar
 import br.com.creativex.ui.MainWindow; // Para acessar o método abrirModulo
 import javax.swing.*;
@@ -13,7 +14,7 @@ public class CadastroUsuarioForm extends JPanel {
     private JTextField txtNome, txtLogin;
     private JPasswordField txtSenha;
     private JComboBox<String> cbPerfil;
-    private final UsuarioDAO dao = new UsuarioDAO();
+    private final UsuarioController controller = AppFactory.usuarioController();
 
     public CadastroUsuarioForm() {
         // Usamos GridBagLayout no painel principal apenas para centralizar o formulário
@@ -82,7 +83,7 @@ public class CadastroUsuarioForm extends JPanel {
         u.setSenha(new String(txtSenha.getPassword()));
         u.setPerfil(cbPerfil.getSelectedItem().toString());
 
-        if (dao.salvar(u)) {
+        if (controller.salvar(u)) {
             JOptionPane.showMessageDialog(this, "Usuário cadastrado com sucesso!");
             limparCampos();
         } else {

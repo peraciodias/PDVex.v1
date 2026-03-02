@@ -2,8 +2,9 @@
 //creativex sistemas
 package br.com.creativex.ui.login;
 
-import br.com.creativex.dao.usuario.UsuarioDAO;
+import br.com.creativex.config.AppFactory;
 import br.com.creativex.model.usuario.Usuario;
+import br.com.creativex.presentation.controller.UsuarioController;
 import br.com.creativex.ui.MainWindow;
 import br.com.creativex.util.Sessao;
 import javax.swing.*;
@@ -14,7 +15,7 @@ public class LoginForm extends JFrame {
     private JTextField txtLogin;
     private JPasswordField txtSenha;
     private JButton btnEntrar;
-    private final UsuarioDAO usuarioDAO = new UsuarioDAO();
+    private final UsuarioController usuarioController = AppFactory.usuarioController();
 
     public LoginForm() {
         setTitle("MERCADO-VS1 - Login");
@@ -52,10 +53,7 @@ public class LoginForm extends JFrame {
             return;
         }
 
-        // Chama o DAO que criamos anteriormente
-        UsuarioDAO usuarioDAO = new UsuarioDAO();
-
-        Usuario usuario = usuarioDAO.autenticar(
+        Usuario usuario = usuarioController.autenticar(
                 txtLogin.getText(),
                 new String(txtSenha.getPassword())
         );

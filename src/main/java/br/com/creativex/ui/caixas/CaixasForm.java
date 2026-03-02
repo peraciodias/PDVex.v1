@@ -4,16 +4,10 @@ package br.com.creativex.ui.caixas;
 
 import br.com.creativex.domain.entity.venda.ItemVenda;
 import br.com.creativex.domain.entity.venda.Venda;
-import br.com.creativex.model.produto.Produto;
-import br.com.creativex.infrastructure.persistence.repository.produto.ProdutoDAO;
-import br.com.creativex.infrastructure.persistence.repository.caixa.VendaDAO;
-import br.com.creativex.infrastructure.persistence.repository.produto.ProdutoRepositoryJdbcAdapter;
-import br.com.creativex.infrastructure.persistence.repository.caixa.VendaRepositoryJdbcAdapter;
-import br.com.creativex.application.produto.CreateProdutoUseCase;
-import br.com.creativex.domain.repository.ProdutoRepository;
-import br.com.creativex.application.caixa.FinalizeVendaUseCase;
-import br.com.creativex.domain.repository.VendaRepository;
+import br.com.creativex.domain.entity.produto.Produto;
+import br.com.creativex.config.AppFactory;
 import br.com.creativex.presentation.controller.CaixaController;
+import br.com.creativex.presentation.controller.ProdutoController;
 import br.com.creativex.util.Sessao;
 import br.com.creativex.ui.HomeScreen;
 import br.com.creativex.ui.MainWindow;
@@ -34,9 +28,8 @@ public class CaixasForm extends JPanel {
 
     // Objetos de controle
     private Venda vendaAtual = new Venda();
-    private final ProdutoDAO produtoDAO = new ProdutoDAO();
-    private final VendaDAO vendaDAO = new VendaDAO();
     private final CaixaController caixaController;
+    private final ProdutoController produtoController;
     private final NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
     private MainWindow mainWindow;
 
@@ -44,12 +37,8 @@ public class CaixasForm extends JPanel {
         setLayout(new BorderLayout(15, 15));
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         this.mainWindow = (MainWindow) SwingUtilities.getWindowAncestor(this);
-        // Wire dependencies for controller
-        ProdutoRepository produtoRepo = new ProdutoRepositoryJdbcAdapter(produtoDAO);
-        CreateProdutoUseCase createProdutoUseCase = new CreateProdutoUseCase(produtoRepo);
-        VendaRepository vendaRepo = new VendaRepositoryJdbcAdapter(vendaDAO);
-        FinalizeVendaUseCase finalizeUseCase = new FinalizeVendaUseCase(vendaRepo);
-        caixaController = new CaixaController(finalizeUseCase, vendaRepo, vendaDAO);
+        this.caixaController = AppFactory.caixaController();
+        this.produtoController = AppFactory.produtoController();
 
         initComponents();
         configurarAtalhos();
@@ -59,12 +48,8 @@ public class CaixasForm extends JPanel {
         setLayout(new BorderLayout(15, 15));
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         this.mainWindow = mainWindow;
-        // Wire dependencies for controller
-        ProdutoRepository produtoRepo = new ProdutoRepositoryJdbcAdapter(produtoDAO);
-        CreateProdutoUseCase createProdutoUseCase = new CreateProdutoUseCase(produtoRepo);
-        VendaRepository vendaRepo = new VendaRepositoryJdbcAdapter(vendaDAO);
-        FinalizeVendaUseCase finalizeUseCase = new FinalizeVendaUseCase(vendaRepo);
-        caixaController = new CaixaController(finalizeUseCase, vendaRepo, vendaDAO);
+        this.caixaController = AppFactory.caixaController();
+        this.produtoController = AppFactory.produtoController();
 
         initComponents();
         configurarAtalhos();
@@ -158,7 +143,7 @@ public class CaixasForm extends JPanel {
         if (filtro.isEmpty()) return;
 
         try {
-            Produto p = produtoDAO.buscarPorCodigoOuId(filtro);
+            Produto p = buscarProdutoPorFiltro(filtro);
             if (p != null) {
 
                 // 🔴 VALIDAÇÃO DE ESTOQUE (INSERIR AQUI)
@@ -206,6 +191,18 @@ public class CaixasForm extends JPanel {
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Erro ao acessar banco: " + ex.getMessage());
         }
+    }
+
+    private Produto buscarProdutoPorFiltro(String filtro) {
+        Produto porCodigo = produtoController.buscarPorCodigoBarra(filtro);
+        if (porCodigo != null) return porCodigo;
+
+        if (filtro.matches("\\d+")) {
+            Produto porId = produtoController.buscarPorId(Long.parseLong(filtro));
+            if (porId != null) return porId;
+        }
+
+        return produtoController.buscarPorNome(filtro);
     }
 
     private void finalizarVenda() {
