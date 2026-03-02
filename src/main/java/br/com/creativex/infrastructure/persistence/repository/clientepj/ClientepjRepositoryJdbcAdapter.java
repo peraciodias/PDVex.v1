@@ -25,7 +25,13 @@ public class ClientepjRepositoryJdbcAdapter implements ClientepjRepository {
     }
 
     @Override
-    public void deleteById(long id) { throw new UnsupportedOperationException("delete not implemented"); }
+    public void deleteById(long id) {
+        try {
+            dao.excluir(id);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao excluir cliente PJ", e);
+        }
+    }
 
     @Override
     public Clientepj findById(long id) {

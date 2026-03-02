@@ -29,8 +29,11 @@ public class ClienteRepositoryJdbcAdapter implements ClienteRepository {
 
     @Override
     public void deleteById(long id) {
-        // implement if needed
-        throw new UnsupportedOperationException("delete not implemented");
+        try {
+            clienteDAO.excluir(id);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao excluir cliente", e);
+        }
     }
 
     @Override

@@ -72,6 +72,15 @@ public class ClientepjDAO {
         }
     }
 
+    public void excluir(long id) throws SQLException {
+        String sql = "DELETE FROM tabela_clientes_pj WHERE id = ?";
+        try (Connection con = Conexao.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+            stmt.executeUpdate();
+        }
+    }
+
     public Clientepj buscarPorId(long id) throws SQLException {
         String sql = "SELECT * FROM tabela_clientes_pj WHERE id = ?";
         try (Connection con = Conexao.getConnection();

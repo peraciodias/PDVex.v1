@@ -43,6 +43,15 @@ public class ClienteDAO {
         }
     }
 
+    public void excluir(long id) throws SQLException {
+        String sql = "DELETE FROM tabela_clientes WHERE id = ?";
+        try (Connection conn = Conexao.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+            stmt.executeUpdate();
+        }
+    }
+
     public Cliente buscarPorCpf(String cpf) throws SQLException {
         String sql = "SELECT * FROM tabela_clientes WHERE cpf = ?";
         try (Connection conn = Conexao.getConnection();

@@ -29,7 +29,11 @@ public class FornecedorRepositoryJdbcAdapter implements FornecedorRepository {
 
     @Override
     public void deleteById(long id) {
-        throw new UnsupportedOperationException("delete not implemented");
+        try {
+            dao.excluir(id);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao excluir fornecedor", e);
+        }
     }
 
     @Override

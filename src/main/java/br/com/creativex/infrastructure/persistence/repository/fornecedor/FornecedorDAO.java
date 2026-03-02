@@ -82,6 +82,15 @@ public class FornecedorDAO {
         }
     }
 
+    public void excluir(long id) throws SQLException {
+        String sql = "DELETE FROM tabela_fornecedores WHERE id = ?";
+        try (Connection conn = Conexao.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+            stmt.executeUpdate();
+        }
+    }
+
     public Fornecedor buscarPorId(long id) throws SQLException {
 
         String sql = "SELECT * FROM tabela_fornecedores WHERE id = ?";
