@@ -13,9 +13,9 @@ public class FornecedorUseCases {
         this.repo = repo;
     }
 
-    public Fornecedor save(Fornecedor f) throws Exception { return repo.save(f); }
-    public Fornecedor findById(long id) throws Exception { return repo.findById(id); }
-    public Fornecedor findByCnpj(String cnpj) throws Exception { return repo.findByCnpj(cnpj); }
-    public List<Fornecedor> findByRazaoSocial(String nome) throws Exception { return repo.findByRazaoSocial(nome); }
-    public List<Fornecedor> listByIdLimit(long idInicial, int limite) throws Exception { return repo.findByIdLimit(idInicial, limite); }
+    public Fornecedor save(Fornecedor f) { return repo.save(f); }
+    public Fornecedor findById(long id) { return repo.findById(id); }
+    public Fornecedor findByCnpj(String cnpj) { return repo.findByCnpj(cnpj); }
+    public List<Fornecedor> findByRazaoSocial(String nome) { return repo.findByRazaoSocial(nome); }
+    public List<Fornecedor> listByIdLimit(long idInicial, int limite) { return repo.findByIdLimit(idInicial, limite); }
 }

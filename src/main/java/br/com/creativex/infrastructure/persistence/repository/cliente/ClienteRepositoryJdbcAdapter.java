@@ -14,38 +14,58 @@ public class ClienteRepositoryJdbcAdapter implements ClienteRepository {
     }
 
     @Override
-    public Cliente save(Cliente cliente) throws Exception {
-        if (cliente.getId() == null) {
-            clienteDAO.inserir(cliente);
-        } else {
-            clienteDAO.atualizar(cliente);
+    public Cliente save(Cliente cliente) {
+        try {
+            if (cliente.getId() == null) {
+                clienteDAO.inserir(cliente);
+            } else {
+                clienteDAO.atualizar(cliente);
+            }
+            return cliente;
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao salvar cliente", e);
         }
-        return cliente;
     }
 
     @Override
-    public void deleteById(long id) throws Exception {
+    public void deleteById(long id) {
         // implement if needed
         throw new UnsupportedOperationException("delete not implemented");
     }
 
     @Override
-    public Cliente findById(long id) throws Exception {
-        return clienteDAO.buscarPorId(id);
+    public Cliente findById(long id) {
+        try {
+            return clienteDAO.buscarPorId(id);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar cliente por ID", e);
+        }
     }
 
     @Override
-    public Cliente findByCpf(String cpf) throws Exception {
-        return clienteDAO.buscarPorCpf(cpf);
+    public Cliente findByCpf(String cpf) {
+        try {
+            return clienteDAO.buscarPorCpf(cpf);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar cliente por CPF", e);
+        }
     }
 
     @Override
-    public List<Cliente> findByName(String nome) throws Exception {
-        return clienteDAO.buscarPorNome(nome);
+    public List<Cliente> findByName(String nome) {
+        try {
+            return clienteDAO.buscarPorNome(nome);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar cliente por nome", e);
+        }
     }
 
     @Override
-    public List<Cliente> findByIdLimit(long idInicial, int limite) throws Exception {
-        return clienteDAO.listarPorIdLimite(idInicial, limite);
+    public List<Cliente> findByIdLimit(long idInicial, int limite) {
+        try {
+            return clienteDAO.listarPorIdLimite(idInicial, limite);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao listar clientes", e);
+        }
     }
 }

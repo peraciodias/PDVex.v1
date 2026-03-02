@@ -14,9 +14,9 @@ public class ClienteController {
         this.useCases = new ClienteUseCases(repository);
     }
 
-    public Cliente save(Cliente c) throws Exception { return useCases.save(c); }
-    public Cliente findById(long id) throws Exception { return useCases.findById(id); }
-    public Cliente findByCpf(String cpf) throws Exception { return useCases.findByCpf(cpf); }
-    public List<Cliente> findByName(String nome) throws Exception { return useCases.findByName(nome); }
-    public List<Cliente> listByIdLimit(long idInicial, int limite) throws Exception { return useCases.listByIdLimit(idInicial, limite); }
+    public Cliente save(Cliente c) { return useCases.save(c); }
+    public Cliente findById(long id) { return useCases.findById(id); }
+    public Cliente findByCpf(String cpf) { return useCases.findByCpf(cpf); }
+    public List<Cliente> findByName(String nome) { return useCases.findByName(nome); }
+    public List<Cliente> listByIdLimit(long idInicial, int limite) { return useCases.listByIdLimit(idInicial, limite); }
 }

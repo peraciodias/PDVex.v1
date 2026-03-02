@@ -41,7 +41,7 @@ public final class AppFactory {
         ProdutoDAO dao = new ProdutoDAO();
         ProdutoRepositoryJdbcAdapter repo = new ProdutoRepositoryJdbcAdapter(dao);
         CreateProdutoUseCase useCase = new CreateProdutoUseCase(repo);
-        return new ProdutoController(useCase, repo, dao);
+        return new ProdutoController(useCase, repo);
     }
 
     public static ClientepjController clientepjController() {
@@ -54,7 +54,7 @@ public final class AppFactory {
         VendaDAO vendaDAO = new VendaDAO();
         VendaRepository vendaRepo = new VendaRepositoryJdbcAdapter(vendaDAO);
         FinalizeVendaUseCase finalizeUseCase = new FinalizeVendaUseCase(vendaRepo);
-        return new CaixaController(finalizeUseCase, vendaRepo, vendaDAO);
+        return new CaixaController(finalizeUseCase, vendaRepo);
     }
 
     public static VendasConsultaController vendasConsultaController() {

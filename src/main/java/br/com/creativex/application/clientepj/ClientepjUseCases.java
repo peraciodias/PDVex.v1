@@ -11,9 +11,9 @@ public class ClientepjUseCases {
 
     public ClientepjUseCases(ClientepjRepository repo) { this.repo = repo; }
 
-    public Clientepj save(Clientepj c) throws Exception { return repo.save(c); }
-    public Clientepj findById(long id) throws Exception { return repo.findById(id); }
-    public Clientepj findByCnpj(String cnpj) throws Exception { return repo.findByCnpj(cnpj); }
-    public List<Clientepj> findByRazaoSocial(String nome) throws Exception { return repo.findByRazaoSocial(nome); }
-    public List<Clientepj> listByIdLimit(int inicio, int limite) throws Exception { return repo.findByIdLimit(inicio, limite); }
+    public Clientepj save(Clientepj c) { return repo.save(c); }
+    public Clientepj findById(long id) { return repo.findById(id); }
+    public Clientepj findByCnpj(String cnpj) { return repo.findByCnpj(cnpj); }
+    public List<Clientepj> findByRazaoSocial(String nome) { return repo.findByRazaoSocial(nome); }
+    public List<Clientepj> listByIdLimit(int inicio, int limite) { return repo.findByIdLimit(inicio, limite); }
 }

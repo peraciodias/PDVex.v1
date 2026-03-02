@@ -6,15 +6,15 @@ import java.util.List;
 
 public interface FornecedorRepository {
 
-    Fornecedor save(Fornecedor fornecedor) throws Exception;
+    Fornecedor save(Fornecedor fornecedor);
 
-    void deleteById(long id) throws Exception;
+    void deleteById(long id);
 
-    Fornecedor findById(long id) throws Exception;
+    Fornecedor findById(long id);
 
-    Fornecedor findByCnpj(String cnpj) throws Exception;
+    Fornecedor findByCnpj(String cnpj);
 
-    List<Fornecedor> findByRazaoSocial(String razaoSocial) throws Exception;
+    List<Fornecedor> findByRazaoSocial(String razaoSocial);
 
-    List<Fornecedor> findByIdLimit(long idInicial, int limite) throws Exception;
+    List<Fornecedor> findByIdLimit(long idInicial, int limite);
 }

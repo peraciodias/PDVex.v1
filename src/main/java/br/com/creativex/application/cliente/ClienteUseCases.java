@@ -13,23 +13,23 @@ public class ClienteUseCases {
         this.repo = repo;
     }
 
-    public Cliente save(Cliente cliente) throws Exception {
+    public Cliente save(Cliente cliente) {
         return repo.save(cliente);
     }
 
-    public Cliente findById(long id) throws Exception {
+    public Cliente findById(long id) {
         return repo.findById(id);
     }
 
-    public Cliente findByCpf(String cpf) throws Exception {
+    public Cliente findByCpf(String cpf) {
         return repo.findByCpf(cpf);
     }
 
-    public List<Cliente> findByName(String nome) throws Exception {
+    public List<Cliente> findByName(String nome) {
         return repo.findByName(nome);
     }
 
-    public List<Cliente> listByIdLimit(long idInicial, int limite) throws Exception {
+    public List<Cliente> listByIdLimit(long idInicial, int limite) {
         return repo.findByIdLimit(idInicial, limite);
     }
 }

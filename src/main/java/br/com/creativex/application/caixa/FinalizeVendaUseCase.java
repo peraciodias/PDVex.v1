@@ -3,8 +3,6 @@ package br.com.creativex.application.caixa;
 import br.com.creativex.domain.entity.venda.Venda;
 import br.com.creativex.domain.repository.VendaRepository;
 
-import java.sql.SQLException;
-
 public class FinalizeVendaUseCase {
 
     private final VendaRepository vendaRepository;
@@ -13,7 +11,7 @@ public class FinalizeVendaUseCase {
         this.vendaRepository = vendaRepository;
     }
 
-    public void execute(Venda venda) throws SQLException {
+    public void execute(Venda venda) {
         // validações e regras do caso de uso podem ficar aqui
         vendaRepository.finalizarVenda(venda);
     }

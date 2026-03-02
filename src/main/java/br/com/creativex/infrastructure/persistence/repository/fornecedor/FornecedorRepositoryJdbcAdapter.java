@@ -14,37 +14,57 @@ public class FornecedorRepositoryJdbcAdapter implements FornecedorRepository {
     }
 
     @Override
-    public Fornecedor save(Fornecedor fornecedor) throws Exception {
-        if (fornecedor.getId() == null) {
-            dao.inserir(fornecedor);
-        } else {
-            dao.atualizar(fornecedor);
+    public Fornecedor save(Fornecedor fornecedor) {
+        try {
+            if (fornecedor.getId() == null) {
+                dao.inserir(fornecedor);
+            } else {
+                dao.atualizar(fornecedor);
+            }
+            return fornecedor;
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao salvar fornecedor", e);
         }
-        return fornecedor;
     }
 
     @Override
-    public void deleteById(long id) throws Exception {
+    public void deleteById(long id) {
         throw new UnsupportedOperationException("delete not implemented");
     }
 
     @Override
-    public Fornecedor findById(long id) throws Exception {
-        return dao.buscarPorId(id);
+    public Fornecedor findById(long id) {
+        try {
+            return dao.buscarPorId(id);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar fornecedor por ID", e);
+        }
     }
 
     @Override
-    public Fornecedor findByCnpj(String cnpj) throws Exception {
-        return dao.buscarPorCnpj(cnpj);
+    public Fornecedor findByCnpj(String cnpj) {
+        try {
+            return dao.buscarPorCnpj(cnpj);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar fornecedor por CNPJ", e);
+        }
     }
 
     @Override
-    public List<Fornecedor> findByRazaoSocial(String razaoSocial) throws Exception {
-        return dao.buscarPorRazaoSocial(razaoSocial);
+    public List<Fornecedor> findByRazaoSocial(String razaoSocial) {
+        try {
+            return dao.buscarPorRazaoSocial(razaoSocial);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar fornecedor por razao social", e);
+        }
     }
 
     @Override
-    public List<Fornecedor> findByIdLimit(long idInicial, int limite) throws Exception {
-        return dao.listarPorIdLimite(idInicial, limite);
+    public List<Fornecedor> findByIdLimit(long idInicial, int limite) {
+        try {
+            return dao.listarPorIdLimite(idInicial, limite);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao listar fornecedores", e);
+        }
     }
 }

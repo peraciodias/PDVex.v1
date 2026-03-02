@@ -16,7 +16,6 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
-import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.util.Locale;
 
@@ -230,7 +229,7 @@ public class CaixasForm extends JPanel {
                 JOptionPane.showMessageDialog(this, "Venda concluída com sucesso!");
                 limparVenda();
 
-            } catch (SQLException ex) {
+            } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Erro crítico ao gravar venda: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             }
         }

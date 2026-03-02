@@ -17,7 +17,7 @@ public class VendasConsultaController {
         this.caixaController = caixaController;
     }
 
-    public List<VendaResumo> listarVendas() throws SQLException {
+    public List<VendaResumo> listarVendas() {
         List<VendaResumo> vendas = new ArrayList<>();
         String sql = """
             SELECT v.id_venda, v.data_venda,
@@ -42,12 +42,14 @@ public class VendasConsultaController {
                         rs.getString("status")
                 ));
             }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao listar vendas", e);
         }
 
         return vendas;
     }
 
-    public void cancelarVenda(long idVenda, long idUsuario) throws SQLException {
+    public void cancelarVenda(long idVenda, long idUsuario) {
         caixaController.cancelarVenda(idVenda, idUsuario);
     }
 }

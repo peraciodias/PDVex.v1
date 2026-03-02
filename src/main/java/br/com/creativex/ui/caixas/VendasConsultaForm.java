@@ -11,7 +11,6 @@ import br.com.creativex.ui.MainWindow;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
@@ -130,10 +129,9 @@ public class VendasConsultaForm extends JPanel {
 
             carregarVendas();
 
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             JOptionPane.showMessageDialog(this,
                     "Erro ao cancelar: " + ex.getMessage());
         }
     }
 }
-

@@ -14,24 +14,52 @@ public class ClientepjRepositoryJdbcAdapter implements ClientepjRepository {
     }
 
     @Override
-    public Clientepj save(Clientepj c) throws Exception {
-        if (c.getId() == null) dao.inserir(c);
-        else dao.atualizar(c);
-        return c;
+    public Clientepj save(Clientepj c) {
+        try {
+            if (c.getId() == null) dao.inserir(c);
+            else dao.atualizar(c);
+            return c;
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao salvar cliente PJ", e);
+        }
     }
 
     @Override
-    public void deleteById(long id) throws Exception { throw new UnsupportedOperationException("delete not implemented"); }
+    public void deleteById(long id) { throw new UnsupportedOperationException("delete not implemented"); }
 
     @Override
-    public Clientepj findById(long id) throws Exception { return dao.buscarPorId(id); }
+    public Clientepj findById(long id) {
+        try {
+            return dao.buscarPorId(id);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar cliente PJ por ID", e);
+        }
+    }
 
     @Override
-    public Clientepj findByCnpj(String cnpj) throws Exception { return dao.buscarPorCnpj(cnpj); }
+    public Clientepj findByCnpj(String cnpj) {
+        try {
+            return dao.buscarPorCnpj(cnpj);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar cliente PJ por CNPJ", e);
+        }
+    }
 
     @Override
-    public List<Clientepj> findByRazaoSocial(String nome) throws Exception { return dao.buscarPorRazaoSocial(nome); }
+    public List<Clientepj> findByRazaoSocial(String nome) {
+        try {
+            return dao.buscarPorRazaoSocial(nome);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar cliente PJ por razao social", e);
+        }
+    }
 
     @Override
-    public List<Clientepj> findByIdLimit(int inicio, int limite) throws Exception { return dao.listarPorIdLimite(inicio, limite); }
+    public List<Clientepj> findByIdLimit(int inicio, int limite) {
+        try {
+            return dao.listarPorIdLimite(inicio, limite);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao listar clientes PJ", e);
+        }
+    }
 }

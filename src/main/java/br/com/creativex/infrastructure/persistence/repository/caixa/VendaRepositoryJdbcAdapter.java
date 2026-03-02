@@ -14,13 +14,20 @@ public class VendaRepositoryJdbcAdapter implements VendaRepository {
     }
 
     @Override
-    public void finalizarVenda(Venda venda) throws SQLException {
-        // VendaDAO now accepts domain entities directly
-        vendaDAO.finalizarVenda(venda);
+    public void finalizarVenda(Venda venda) {
+        try {
+            vendaDAO.finalizarVenda(venda);
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao finalizar venda", e);
+        }
     }
 
     @Override
-    public void cancelarVenda(long idVenda, long idUsuario) throws SQLException {
-        vendaDAO.cancelarVenda(idVenda, idUsuario);
+    public void cancelarVenda(long idVenda, long idUsuario) {
+        try {
+            vendaDAO.cancelarVenda(idVenda, idUsuario);
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao cancelar venda", e);
+        }
     }
 }
