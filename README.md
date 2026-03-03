@@ -1,103 +1,92 @@
-# PDVex-v1 🛒
+# PDVex-v1
 
-## 📌 Funcionalidades
+Sistema desktop de PDV (Swing + Java 21) com persistência JDBC em PostgreSQL.
 
-- ✔️ Cadastro de produto
-- ✔️ Cadastro e gerenciamento de fornecedores
-- ✔️ Cadastro e gerenciamento de Clientes Pessoa física
-- ✔️ Cadastro e gerenciamento de de Clientes Pessoa jurídica
-- ✔️ Cadastro e gerenciamento de usuarios
-- ✔️ Controle de estoque
-- ✔️ Gerenciamento de Caixas
-- ✔️ Relatórios
-- ✔️ Configuração de impressoaras
-- ✔️ Interface moderna em Swing
-- ✔️ Arquitetura organizada (MVC simplificado)
-- ✔️ Conexão MySQL centralizada
+## Funcionalidades
+- Cadastro e manutenção de produtos
+- Cadastro de clientes PF
+- Cadastro de clientes PJ
+- Cadastro de fornecedores
+- Cadastro/autenticação de usuários
+- Operação de caixa (finalização e cancelamento de venda)
+- Consulta de vendas
+- Controle de estoque via movimentações
 
+## Arquitetura Atual (Clean Architecture)
+O projeto foi reorganizado para separar regras de negócio, casos de uso, adapters e interface.
 
-## 🏗️ Estrutura do Projeto (Maven)
+### Fluxo de dependência
+`ui -> presentation -> application -> domain`
 
-## 🛢️ Banco de Dados
+`infrastructure` implementa portas do `domain` e é montada pelo `config/AppFactory`.
 
-### 📌 Requisitos
--Postgresql
-- Driver JDBC para PostgreSQL
-  org.postgresql/<artifactId>postgresql</artifactId>/<version>42.7.2</version>
+### Estrutura de pacotes
+```text
+src/main/java/br/com/creativex
+├── application
+│   ├── caixa
+│   ├── cliente
+│   ├── clientepj
+│   ├── fornecedor
+│   ├── produto
+│   ├── usuario
+│   └── usecase/core
+├── config
+├── db
+├── domain
+│   ├── entity
+│   └── repository
+├── infrastructure
+│   ├── persistence/repository
+│   └── transaction
+├── presentation
+│   └── controller
+├── ui
+└── util
+```
 
-1. Execute o script
-   `Usar arquivo Mysql /PDVex-v1/src/main/resources/TABELA_PRODUTOS	sql`
+## Tecnologias
+- Java 21
+- Swing
+- PostgreSQL
+- JDBC
+- Maven
+- JUnit 5 / Mockito
 
-### 📌 conexão com jdbc:
-private static final String URL  = "jdbc:mysql://localhost:3306/BCO_DADOS_MERCADO";
-private static final String USER = "root";
-private static final String PASS = "root";
+## Requisitos
+- JDK 21
+- Maven 3.9+
+- PostgreSQL ativo
 
+## Banco de dados
+Scripts SQL ficam em:
 
-### 📌 Como executar no bash:
-2. Clone o repositório:
-   git clone
-   cd MERCADO-VS1
+- `src/main/resources/CRIA-TABELAS-POSTGRE.sql`
+- `src/main/resources/alteração-tabela_vendas.sql`
+- `src/main/resources/CRIA-tabela_caixas.TXT`
 
-3. Compile com Maven
-   mvn clean install
+A conexão JDBC está centralizada em:
 
-4. Execute:
-   mvn exec:java -Dexec.mainClass="br.com.creativex.Main"
+- `src/main/java/br/com/creativex/db/Conexao.java`
 
-ou se preferir
+## Como executar
+```bash
+mvn clean compile
+mvn exec:java -Dexec.mainClass="br.com.creativex.Main"
+```
 
-java -jar target/PDVex-v1.jar
+Opcional:
+```bash
+mvn package
+java -jar target/PDVex-v1-1.0-SNAPSHOT.jar
+```
 
-🖥️ Tecnologias Utilizadas
+## Testes
+```bash
+mvn test
+```
 
-Java 21
+Observação: em alguns ambientes Linux/JDK 21 o Mockito pode exigir ajuste de mock maker/agent para execução dos testes.
 
-Swing
-
-PostgreSQL
-
-JDBC
-
-Maven
-
-MVC modularizado
-
-
-🧩 Arquitetura
-
-O projeto segue uma arquitetura simples para facilitar manutenção:
-
-Model
-
-Representa os dados (ex: Produto).
-
-DAO
-
-Acesso ao banco e operações CRUD (ProdutoDAO).
-
-UI
-
-Interface visual construída com JFrame/JPanel (ProdutoForm).
-
-DB
-
-Conexão centralizada com o banco.
-
-🛠️ Melhorias Futuras (roadmap)
-
-📌 Adicionar login de usuário
-
-📌 Suporte a imagens de produtos
-
-📌 Filtragem avançada
-
-📌 Migração para JavaFX
-
-📌 Relatórios em PDF
-
-📌 API REST (Spring Boot)
-
-📚 Autor
-🛠️
+## Autor
 Perácio Dias
