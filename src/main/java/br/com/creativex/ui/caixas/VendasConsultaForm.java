@@ -2,7 +2,7 @@
 //creativex sistemas
 package br.com.creativex.ui.caixas;
 import br.com.creativex.config.AppFactory;
-import br.com.creativex.presentation.controller.VendaResumo;
+import br.com.creativex.domain.entity.venda.VendaResumo;
 import br.com.creativex.presentation.controller.VendasConsultaController;
 import br.com.creativex.util.Sessao;
 import br.com.creativex.ui.HomeScreen;

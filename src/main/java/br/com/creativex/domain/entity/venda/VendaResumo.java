@@ -1,4 +1,4 @@
-package br.com.creativex.presentation.controller;
+package br.com.creativex.domain.entity.venda;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;

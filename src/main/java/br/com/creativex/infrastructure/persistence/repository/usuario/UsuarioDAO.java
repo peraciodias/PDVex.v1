@@ -4,7 +4,7 @@
 package br.com.creativex.infrastructure.persistence.repository.usuario;
 
 import br.com.creativex.db.Conexao;
-import br.com.creativex.model.usuario.Usuario;
+import br.com.creativex.domain.entity.usuario.Usuario;
 import java.sql.*;
 
 public class UsuarioDAO {

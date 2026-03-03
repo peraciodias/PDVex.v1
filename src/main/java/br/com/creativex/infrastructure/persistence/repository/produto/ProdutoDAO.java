@@ -3,7 +3,7 @@
 
 package br.com.creativex.infrastructure.persistence.repository.produto;
 
-import br.com.creativex.model.produto.Produto;
+import br.com.creativex.domain.entity.produto.Produto;
 import br.com.creativex.infrastructure.transaction.TransactionManager;
 
 import java.sql.*;

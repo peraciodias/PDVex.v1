@@ -13,34 +13,11 @@ public class UsuarioRepositoryJdbcAdapter implements UsuarioRepository {
 
     @Override
     public Usuario autenticar(String login, String senha) {
-        br.com.creativex.model.usuario.Usuario model = usuarioDAO.autenticar(login, senha);
-        return model == null ? null : toDomain(model);
+        return usuarioDAO.autenticar(login, senha);
     }
 
     @Override
     public boolean salvar(Usuario usuario) {
-        return usuarioDAO.salvar(toModel(usuario));
-    }
-
-    private Usuario toDomain(br.com.creativex.model.usuario.Usuario model) {
-        Usuario domain = new Usuario();
-        domain.setId(model.getId());
-        domain.setNome(model.getNome());
-        domain.setLogin(model.getLogin());
-        domain.setSenha(model.getSenha());
-        domain.setPerfil(model.getPerfil());
-        domain.setAtivo(model.isAtivo());
-        return domain;
-    }
-
-    private br.com.creativex.model.usuario.Usuario toModel(Usuario domain) {
-        br.com.creativex.model.usuario.Usuario model = new br.com.creativex.model.usuario.Usuario();
-        model.setId(domain.getId());
-        model.setNome(domain.getNome());
-        model.setLogin(domain.getLogin());
-        model.setSenha(domain.getSenha());
-        model.setPerfil(domain.getPerfil());
-        model.setAtivo(domain.isAtivo());
-        return model;
+        return usuarioDAO.salvar(usuario);
     }
 }

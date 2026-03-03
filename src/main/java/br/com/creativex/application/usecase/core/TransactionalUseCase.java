@@ -1,12 +1,10 @@
 package br.com.creativex.application.usecase.core;
 
-import br.com.creativex.infrastructure.transaction.TransactionManager;
-
 public abstract class TransactionalUseCase<I, O> implements UseCase<I, O> {
 
-    private final TransactionManager tx;
+    private final TransactionBoundary tx;
 
-    protected TransactionalUseCase(TransactionManager tx) {
+    protected TransactionalUseCase(TransactionBoundary tx) {
         this.tx = tx;
     }
 

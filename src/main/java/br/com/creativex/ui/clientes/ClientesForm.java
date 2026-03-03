@@ -3,8 +3,6 @@
 package br.com.creativex.ui.clientes;
 
 import br.com.creativex.domain.entity.cliente.Cliente;
-import br.com.creativex.infrastructure.persistence.repository.cliente.ClienteDAO;
-import br.com.creativex.infrastructure.persistence.repository.cliente.ClienteRepositoryJdbcAdapter;
 import br.com.creativex.presentation.controller.ClienteController;
 import br.com.creativex.ui.HomeScreen;
 import br.com.creativex.ui.MainWindow;
@@ -15,7 +13,6 @@ import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.awt.event.*;
 import java.math.BigDecimal;
-import java.sql.SQLException;
 import java.util.List;
 import java.net.HttpURLConnection;
 import java.net.URL;

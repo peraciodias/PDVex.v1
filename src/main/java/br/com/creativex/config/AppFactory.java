@@ -4,12 +4,14 @@ import br.com.creativex.infrastructure.persistence.repository.fornecedor.Fornece
 import br.com.creativex.infrastructure.persistence.repository.fornecedor.FornecedorRepositoryJdbcAdapter;
 import br.com.creativex.presentation.controller.FornecedorController;
 import br.com.creativex.infrastructure.persistence.repository.caixa.VendaDAO;
+import br.com.creativex.infrastructure.persistence.repository.caixa.VendaConsultaRepositoryJdbcAdapter;
 import br.com.creativex.infrastructure.persistence.repository.caixa.VendaRepositoryJdbcAdapter;
 import br.com.creativex.infrastructure.persistence.repository.cliente.ClienteDAO;
 import br.com.creativex.infrastructure.persistence.repository.cliente.ClienteRepositoryJdbcAdapter;
 import br.com.creativex.infrastructure.persistence.repository.usuario.UsuarioDAO;
 import br.com.creativex.infrastructure.persistence.repository.usuario.UsuarioRepositoryJdbcAdapter;
 import br.com.creativex.application.caixa.FinalizeVendaUseCase;
+import br.com.creativex.application.caixa.ListarVendasUseCase;
 import br.com.creativex.application.usuario.UsuarioUseCases;
 import br.com.creativex.presentation.controller.ClienteController;
 import br.com.creativex.presentation.controller.ClientepjController;
@@ -21,6 +23,7 @@ import br.com.creativex.presentation.controller.UsuarioController;
 import br.com.creativex.presentation.controller.VendasConsultaController;
 import br.com.creativex.application.produto.CreateProdutoUseCase;
 import br.com.creativex.domain.repository.ProdutoRepository;
+import br.com.creativex.domain.repository.VendaConsultaRepository;
 import br.com.creativex.domain.repository.VendaRepository;
 
 public final class AppFactory {
@@ -60,7 +63,9 @@ public final class AppFactory {
     }
 
     public static VendasConsultaController vendasConsultaController() {
-        return new VendasConsultaController(caixaController());
+        VendaConsultaRepository consultaRepository = new VendaConsultaRepositoryJdbcAdapter();
+        ListarVendasUseCase listarVendasUseCase = new ListarVendasUseCase(consultaRepository);
+        return new VendasConsultaController(caixaController(), listarVendasUseCase);
     }
 
     public static UsuarioController usuarioController() {
