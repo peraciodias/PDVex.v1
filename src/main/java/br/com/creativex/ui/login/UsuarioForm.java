@@ -2,7 +2,7 @@
 //creativex sistemas
 package br.com.creativex.ui.login;
 import br.com.creativex.config.AppFactory;
-import br.com.creativex.model.usuario.Usuario;
+import br.com.creativex.domain.entity.usuario.Usuario;
 import br.com.creativex.presentation.controller.UsuarioController;
 import javax.swing.*;
 import java.awt.*;

@@ -1,21 +1,21 @@
 package br.com.creativex.presentation.controller;
 
-import br.com.creativex.infrastructure.persistence.repository.usuario.UsuarioDAO;
-import br.com.creativex.model.usuario.Usuario;
+import br.com.creativex.application.usuario.UsuarioUseCases;
+import br.com.creativex.domain.entity.usuario.Usuario;
 
 public class UsuarioController {
 
-    private final UsuarioDAO usuarioDAO;
+    private final UsuarioUseCases useCases;
 
-    public UsuarioController(UsuarioDAO usuarioDAO) {
-        this.usuarioDAO = usuarioDAO;
+    public UsuarioController(UsuarioUseCases useCases) {
+        this.useCases = useCases;
     }
 
     public Usuario autenticar(String login, String senha) {
-        return usuarioDAO.autenticar(login, senha);
+        return useCases.autenticar(login, senha);
     }
 
     public boolean salvar(Usuario usuario) {
-        return usuarioDAO.salvar(usuario);
+        return useCases.salvar(usuario);
     }
 }

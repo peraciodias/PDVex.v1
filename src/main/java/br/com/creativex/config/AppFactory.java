@@ -8,7 +8,9 @@ import br.com.creativex.infrastructure.persistence.repository.caixa.VendaReposit
 import br.com.creativex.infrastructure.persistence.repository.cliente.ClienteDAO;
 import br.com.creativex.infrastructure.persistence.repository.cliente.ClienteRepositoryJdbcAdapter;
 import br.com.creativex.infrastructure.persistence.repository.usuario.UsuarioDAO;
+import br.com.creativex.infrastructure.persistence.repository.usuario.UsuarioRepositoryJdbcAdapter;
 import br.com.creativex.application.caixa.FinalizeVendaUseCase;
+import br.com.creativex.application.usuario.UsuarioUseCases;
 import br.com.creativex.presentation.controller.ClienteController;
 import br.com.creativex.presentation.controller.ClientepjController;
 import br.com.creativex.infrastructure.persistence.repository.produto.ProdutoDAO;
@@ -62,6 +64,9 @@ public final class AppFactory {
     }
 
     public static UsuarioController usuarioController() {
-        return new UsuarioController(new UsuarioDAO());
+        UsuarioDAO dao = new UsuarioDAO();
+        UsuarioRepositoryJdbcAdapter repo = new UsuarioRepositoryJdbcAdapter(dao);
+        UsuarioUseCases useCases = new UsuarioUseCases(repo);
+        return new UsuarioController(useCases);
     }
 }

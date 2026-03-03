@@ -3,7 +3,7 @@
 package br.com.creativex.ui.login;
 
 import br.com.creativex.config.AppFactory;
-import br.com.creativex.model.usuario.Usuario;
+import br.com.creativex.domain.entity.usuario.Usuario;
 import br.com.creativex.presentation.controller.UsuarioController;
 import br.com.creativex.ui.MainWindow;
 import br.com.creativex.util.Sessao;

@@ -3,7 +3,7 @@
 package br.com.creativex.ui.cadastrousuario;
 
 import br.com.creativex.config.AppFactory;
-import br.com.creativex.model.usuario.Usuario;
+import br.com.creativex.domain.entity.usuario.Usuario;
 import br.com.creativex.presentation.controller.UsuarioController;
 import br.com.creativex.ui.HomeScreen; // Import para voltar
 import br.com.creativex.ui.MainWindow; // Para acessar o método abrirModulo

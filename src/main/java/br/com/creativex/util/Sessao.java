@@ -2,7 +2,7 @@
 //creativex sistemas
 package br.com.creativex.util;
 
-import br.com.creativex.model.usuario.Usuario;
+import br.com.creativex.domain.entity.usuario.Usuario;
 
 public class Sessao {
 
