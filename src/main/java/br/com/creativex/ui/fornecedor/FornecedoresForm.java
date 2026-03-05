@@ -3,7 +3,6 @@
 package br.com.creativex.ui.fornecedor;
 
 import br.com.creativex.domain.entity.fornecedor.Fornecedor;
-import br.com.creativex.presentation.controller.FornecedorController;
 import br.com.creativex.ui.HomeScreen;
 import br.com.creativex.ui.MainWindow;
 
@@ -360,13 +359,6 @@ private String somenteNumeros(String s) { return s == null ? "" : s.replaceAll("
         txtLimiteCredito.setValue(f.getLimiteCredito());
     }
     //===
-    private void carregarDaTabela(int row) {
-        txtId.setText(String.valueOf(model.getValueAt(row, 0)));
-        txtRazaoSocial.setText(String.valueOf(model.getValueAt(row, 1)));
-        txtCnpj.setText(String.valueOf(model.getValueAt(row, 2)));
-        txtTelefone.setText(String.valueOf(model.getValueAt(row, 3)));
-        txtCidade.setText(String.valueOf(model.getValueAt(row, 4)));
-    }
     //===Validar
     private boolean validar() {
         if (txtContato.getText().isBlank()) {

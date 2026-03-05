@@ -22,7 +22,6 @@ import br.com.creativex.presentation.controller.ProdutoController;
 import br.com.creativex.presentation.controller.UsuarioController;
 import br.com.creativex.presentation.controller.VendasConsultaController;
 import br.com.creativex.application.produto.CreateProdutoUseCase;
-import br.com.creativex.domain.repository.ProdutoRepository;
 import br.com.creativex.domain.repository.VendaConsultaRepository;
 import br.com.creativex.domain.repository.VendaRepository;
 
@@ -43,10 +42,16 @@ public final class AppFactory {
     }
 
     public static ProdutoController produtoController() {
-        ProdutoDAO dao = new ProdutoDAO();
-        ProdutoRepositoryJdbcAdapter repo = new ProdutoRepositoryJdbcAdapter(dao);
-        CreateProdutoUseCase useCase = new CreateProdutoUseCase(repo);
-        return new ProdutoController(useCase, repo);
+        try {
+            var conn = br.com.creativex.db.Conexao.getConnection();
+            var tx = new br.com.creativex.infrastructure.transaction.TransactionManager(conn);
+            ProdutoDAO dao = new ProdutoDAO(tx);
+            ProdutoRepositoryJdbcAdapter repo = new ProdutoRepositoryJdbcAdapter(dao);
+            CreateProdutoUseCase useCase = new CreateProdutoUseCase(repo);
+            return new ProdutoController(useCase, repo);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao criar ProdutoController", e);
+        }
     }
 
     public static ClientepjController clientepjController() {

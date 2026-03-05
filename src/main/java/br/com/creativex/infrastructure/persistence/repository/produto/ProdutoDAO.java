@@ -4,19 +4,22 @@
 package br.com.creativex.infrastructure.persistence.repository.produto;
 
 import br.com.creativex.domain.entity.produto.Produto;
-import br.com.creativex.infrastructure.transaction.TransactionManager;
+import br.com.creativex.domain.transaction.Transaction;
 
 import java.sql.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class ProdutoDAO {
+    private final Transaction tx;
 
-    private final TransactionManager tx = new TransactionManager();
-
-    public ProdutoDAO() {
+    public ProdutoDAO(Transaction tx) {
+        this.tx = tx;
     }
+
+    // ...existing code...
 
     // ==============================
     // BUSCAR ÚLTIMO

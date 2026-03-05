@@ -6,7 +6,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
-import java.util.Locale;
 
 public class FinalizarVendaDialog extends JDialog {
 
@@ -23,7 +22,7 @@ public class FinalizarVendaDialog extends JDialog {
 
     private final BigDecimal totalVenda;
     private final NumberFormat nf =
-            NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+            NumberFormat.getCurrencyInstance(java.util.Locale.of("pt", "BR"));
 
     public FinalizarVendaDialog(Frame parent, BigDecimal totalVenda) {
         super(parent, "Finalizar Venda", true);

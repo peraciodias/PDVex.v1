@@ -1,53 +1,87 @@
 // Peracio Dias
-//creativex sistemas
-
+// creativex sistemas
 package br.com.creativex.infrastructure.transaction;
 
-import br.com.creativex.db.Conexao;
 
+import br.com.creativex.domain.transaction.Transaction;
+import br.com.creativex.domain.transaction.TransactionalOperation;
 import java.sql.Connection;
 
-public class TransactionManager {
+public class TransactionManager implements Transaction {
 
+
+
+    @Override
     public <T> T execute(TransactionalOperation<T> operation) {
-
-        Connection conn = null;
-
         try {
-            conn = Conexao.getConnection();
-            conn.setAutoCommit(false);
-
-            T result = operation.execute(conn);
-
-            conn.commit();
+            begin();
+            T result = operation.execute(connection);
+            commit();
             return result;
-
         } catch (Exception e) {
-
-            try {
-                if (conn != null) conn.rollback();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-
+            rollback();
             throw new RuntimeException("Erro na transação: " + e.getMessage(), e);
-
-        } finally {
-            try {
-                if (conn != null) conn.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
     }
 
+    private final Connection connection;
+
+    private final ThreadLocal<Boolean> active =
+            ThreadLocal.withInitial(() -> false);
+
+    public TransactionManager(Connection connection) {
+        this.connection = connection;
+    }
+
+    @Override
     public void begin() {
+
+        try {
+
+            if (!active.get()) {
+                connection.setAutoCommit(false);
+                active.set(true);
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao iniciar transação", e);
+        }
     }
 
+    @Override
     public void commit() {
+
+        try {
+
+            if (active.get()) {
+                connection.commit();
+                connection.setAutoCommit(true);
+                active.set(false);
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao confirmar transação", e);
+        }
     }
 
+    @Override
     public void rollback() {
-        
+
+        try {
+
+            if (active.get()) {
+                connection.rollback();
+                connection.setAutoCommit(true);
+                active.set(false);
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao desfazer transação", e);
+        }
+    }
+
+    @Override
+    public boolean isActive() {
+        return active.get();
     }
 }

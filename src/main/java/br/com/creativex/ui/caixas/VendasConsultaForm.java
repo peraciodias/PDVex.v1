@@ -13,7 +13,6 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.text.NumberFormat;
 import java.util.List;
-import java.util.Locale;
 
 public class VendasConsultaForm extends JPanel {
 
@@ -24,7 +23,7 @@ public class VendasConsultaForm extends JPanel {
     private final VendasConsultaController controller;
 
     private final NumberFormat nf =
-            NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+            NumberFormat.getCurrencyInstance(java.util.Locale.of("pt", "BR"));
 
     public VendasConsultaForm() {
         setLayout(new BorderLayout(10, 10));

@@ -120,20 +120,7 @@ public class MainWindow extends JFrame {
         return menu;
     }
 
-    private JButton criarBotaoMenu(String texto) {
-        JButton b = new JButton(texto);
-        b.setFocusPainted(false);
-        b.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        b.setHorizontalAlignment(SwingConstants.LEFT);
-        b.setPreferredSize(new Dimension(160, 40));
-        // aparência leve:
-        b.setBackground(new Color(255, 255, 255));
-        b.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200,200,200), 1),
-                BorderFactory.createEmptyBorder(6, 8, 6, 8)
-        ));
-        return b;
-    }
+
 
     /**
      * Remove o conteúdo atual e adiciona o painel do módulo.

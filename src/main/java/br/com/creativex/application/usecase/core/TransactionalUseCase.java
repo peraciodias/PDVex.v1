@@ -1,22 +1,42 @@
+
 package br.com.creativex.application.usecase.core;
+
+import br.com.creativex.domain.transaction.Transaction;
 
 public abstract class TransactionalUseCase<I, O> implements UseCase<I, O> {
 
-    private final TransactionBoundary tx;
+    private final Transaction tx;
 
-    protected TransactionalUseCase(TransactionBoundary tx) {
+    protected TransactionalUseCase(Transaction tx) {
         this.tx = tx;
     }
 
     @Override
     public O execute(I input) {
+
+        boolean startedHere = false;
+
         try {
-            tx.begin();
+
+            if (!tx.isActive()) {
+                tx.begin();
+                startedHere = true;
+            }
+
             O output = doExecute(input);
-            tx.commit();
+
+            if (startedHere) {
+                tx.commit();
+            }
+
             return output;
+
         } catch (Exception e) {
-            tx.rollback();
+
+            if (startedHere) {
+                tx.rollback();
+            }
+
             throw e;
         }
     }

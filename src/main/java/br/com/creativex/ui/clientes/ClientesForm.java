@@ -3,7 +3,6 @@
 package br.com.creativex.ui.clientes;
 
 import br.com.creativex.domain.entity.cliente.Cliente;
-import br.com.creativex.presentation.controller.ClienteController;
 import br.com.creativex.ui.HomeScreen;
 import br.com.creativex.ui.MainWindow;
 
@@ -129,7 +128,7 @@ public class ClientesForm extends JPanel {
         if (cleanCep.length() != 8) return;
         new Thread(() -> {
             try {
-                URL url = new URL("https://viacep.com.br/ws/" + cleanCep + "/json/");
+                URL url = java.net.URI.create("https://viacep.com.br/ws/" + cleanCep + "/json/").toURL();
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 if (conn.getResponseCode() == 200) {
                     BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));

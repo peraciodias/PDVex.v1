@@ -17,7 +17,6 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
-import java.util.Locale;
 
 public class CaixasForm extends JPanel {
     private JTextField txtCodigoBarras, txtQuantidade, txtTotalVenda;
@@ -29,7 +28,7 @@ public class CaixasForm extends JPanel {
     private Venda vendaAtual = new Venda();
     private final CaixaController caixaController;
     private final ProdutoController produtoController;
-    private final NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+    private final NumberFormat nf = NumberFormat.getCurrencyInstance(java.util.Locale.of("pt", "BR"));
     private MainWindow mainWindow;
 
     public CaixasForm() {
@@ -56,9 +55,6 @@ public class CaixasForm extends JPanel {
 
     private void initComponents() {
         // --- TOPO: ENTRADA ---
-        JLabel lblOperador = new JLabel(
-                "Operador: " + Sessao.getUsuarioLogado().getNome()
-        );
 
         JPanel pnlTopo = new JPanel(new GridLayout(1, 4, 10, 10));
         txtCodigoBarras = new JTextField();
