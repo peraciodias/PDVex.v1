@@ -85,8 +85,8 @@ java -jar target/PDVex-v1-1.0-SNAPSHOT.jar
 ```bash
 mvn test
 ```
-
 Observação: em alguns ambientes Linux/JDK 21 o Mockito pode exigir ajuste de mock maker/agent para execução dos testes.
 
 ## Autor
+
 Perácio Dias
