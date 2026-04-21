@@ -13,7 +13,9 @@ public class CaixaController {
         this.finalizeVendaUseCase = finalizeVendaUseCase;
         this.vendaRepository = vendaRepository;
     }
-
+    public Venda buscarVendaPorId(long idVenda) {
+        return vendaRepository.buscarPorIdComItens(idVenda);
+    }
     public void finalizarVenda(Venda venda) {
         finalizeVendaUseCase.execute(venda);
     }

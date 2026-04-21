@@ -12,17 +12,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VendaConsultaRepositoryJdbcAdapter implements VendaConsultaRepository {
-
+// COALESCE -> usa cliente cadastrado
+//senão → usa nome avulso
+//senão → "NÃO INFORMADO"
     @Override
     public List<VendaResumo> listarVendas() {
         List<VendaResumo> vendas = new ArrayList<>();
         String sql = """
             SELECT v.id_venda, v.data_venda,
-                   u.nome,
+                   u.nome AS usuario,
+                   COALESCE(c.nome, v.nome_cliente_avulso, 'NÃO INFORMADO') AS cliente,
                    v.total_liquido,
                    v.status
             FROM tabela_vendas v
             JOIN tabela_usuarios u ON v.id_usuario = u.id
+            LEFT JOIN tabela_clientes c
+                ON c.id = v.id_cliente
             ORDER BY v.data_venda DESC
         """;
 
@@ -34,7 +39,8 @@ public class VendaConsultaRepositoryJdbcAdapter implements VendaConsultaReposito
                 vendas.add(new VendaResumo(
                         rs.getLong("id_venda"),
                         rs.getTimestamp("data_venda"),
-                        rs.getString("nome"),
+                        rs.getString("usuario"),   // ✔ primeiro usuario
+                        rs.getString("cliente"),   // ✔ depois cliente
                         rs.getBigDecimal("total_liquido"),
                         rs.getString("status")
                 ));

@@ -32,7 +32,7 @@ public class FinalizarVendaDialog extends JDialog {
         setSize(380, 300);
         setLocationRelativeTo(parent);
 
-        JPanel pnlInfo = new JPanel(new GridLayout(6, 1, 5, 5));
+        JPanel pnlInfo = new JPanel(new GridLayout(8, 1, 5, 5));
         pnlInfo.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
         // TOTAL
@@ -90,6 +90,8 @@ public class FinalizarVendaDialog extends JDialog {
         add(pnlBotoes, BorderLayout.SOUTH);
 
         getRootPane().setDefaultButton(btnConfirmar);
+
+
     }
 
     // =========================
@@ -119,9 +121,25 @@ public class FinalizarVendaDialog extends JDialog {
     }
 
     private void confirmarVenda() {
-        if (valorPago.compareTo(totalVenda) < 0 &&
-            cbPagamento.getSelectedItem().equals("Dinheiro")) {
+        try {
+            String texto = txtValorPago.getText()
+                    .replace("R$", "")
+                    .replace(".", "")
+                    .replace(",", ".")
+                    .trim();
 
+            if (texto.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Informe o valor pago!");
+                return;
+            }
+
+            valorPago = new BigDecimal(texto);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Valor pago inválido!");
+            return;
+        }
+
+        if (valorPago.compareTo(totalVenda) < 0) {
             JOptionPane.showMessageDialog(
                     this,
                     "Valor pago é menor que o total!",

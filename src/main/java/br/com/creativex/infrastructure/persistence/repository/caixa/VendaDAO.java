@@ -14,13 +14,20 @@ public class VendaDAO {
 
     public void finalizarVenda(Venda venda) throws SQLException {
 
+        if (venda.getIdCliente() == null &&
+                (venda.getNomeClienteAvulso() == null || venda.getNomeClienteAvulso().isBlank())) {
+
+            venda.setNomeClienteAvulso("NÃO INFORMADO");
+        }
+
+
         String sqlVenda = """
-            INSERT INTO tabela_vendas
-            (id_usuario, id_cliente,
-             total_bruto, total_desconto, total_liquido,
-             metodo_pagamento, valor_pago, troco)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            RETURNING id_venda
+          INSERT INTO tabela_vendas
+           (id_usuario, id_cliente, nome_cliente_avulso, cpf_avulso,
+           total_bruto, total_desconto, total_liquido,
+           metodo_pagamento, valor_pago, troco)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+           RETURNING id_venda
         """;
 
         String sqlItem = """
@@ -54,14 +61,30 @@ public class VendaDAO {
             long idVenda;
             try (PreparedStatement ps = conn.prepareStatement(sqlVenda)) {
                 ps.setLong(1, venda.getIdUsuario());
-                ps.setObject(2, venda.getIdCliente());
-                ps.setBigDecimal(3, venda.getTotalBruto());
-                ps.setBigDecimal(4, venda.getTotalDesconto());
-                ps.setBigDecimal(5, venda.getTotalLiquido());
-                ps.setString(6, venda.getMetodoPagamento());
-                ps.setBigDecimal(7, venda.getValorPago());
-                ps.setBigDecimal(8, venda.getTroco());
+                if (venda.getIdCliente() != null) {
+                    ps.setLong(2, venda.getIdCliente());
+                } else {
+                    ps.setNull(2, Types.BIGINT);
+                }
 
+                if (venda.getNomeClienteAvulso() != null) {
+                    ps.setString(3, venda.getNomeClienteAvulso());
+                } else {
+                    ps.setNull(3, Types.VARCHAR);
+                }
+
+                if (venda.getCpfAvulso() != null) {
+                    ps.setString(4, venda.getCpfAvulso());
+                } else {
+                    ps.setNull(4, Types.VARCHAR);
+                }
+
+                ps.setBigDecimal(5, venda.getTotalBruto());
+                ps.setBigDecimal(6, venda.getTotalDesconto());
+                ps.setBigDecimal(7, venda.getTotalLiquido());
+                ps.setString(8, venda.getMetodoPagamento());
+                ps.setBigDecimal(9, venda.getValorPago());
+                ps.setBigDecimal(10, venda.getTroco());
                 ResultSet rs = ps.executeQuery();
                 if (!rs.next()) {
                     throw new SQLException("Erro ao gerar ID da venda.");

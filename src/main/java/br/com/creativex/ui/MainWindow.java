@@ -21,12 +21,17 @@ import java.awt.*;
  * - Área central para carregar módulos (JPanel)
  * - Menu inferior com botões
  */
+
 public class MainWindow extends JFrame {
 
     private final JPanel painelConteudo;
     private final JPanel bottomMenu;
+    private final br.com.creativex.domain.entity.usuario.Usuario usuarioLogado; // ✅ Atributo adicionado
 
-    public MainWindow() {
+    // ✅ Construtor agora recebe o Usuario
+    public MainWindow(br.com.creativex.domain.entity.usuario.Usuario usuario) {
+        this.usuarioLogado = usuario;
+
         setTitle("📌 MERCADO-VS1 — Sistema de Gestão");
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setSize(1300, 800);
@@ -34,59 +39,43 @@ public class MainWindow extends JFrame {
         setLayout(new BorderLayout());
         setExtendedState(JFrame.MAXIMIZED_BOTH);
 
+        // ... código do windowListener permanece igual ...
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                int response = JOptionPane.showConfirmDialog(MainWindow.this,
-                        "Deseja sair do Sistema?", "Confirmação",
-                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                if (response == JOptionPane.YES_OPTION) {
-                    System.exit(0);
-                }
+                confirmarSaida();
             }
         });
 
-        // Painel central onde os módulos serão carregados
         painelConteudo = new JPanel(new BorderLayout());
         add(painelConteudo, BorderLayout.CENTER);
 
-        // Menu inferior
         bottomMenu = criarBottomMenu();
         add(bottomMenu, BorderLayout.SOUTH);
-        
-        //abrir HomeScreen com o Logo de fundo
-        abrirModulo(new HomeScreen());
 
+        abrirModulo(new HomeScreen());
     }
 
-    /**
-     * Cria o painel do menu na parte inferior, com 2 linhas.
-     */
     private JPanel criarBottomMenu() {
-
-        // Painel igual ao padrão ProdutoForm
         JPanel menu = new JPanel();
         menu.setBorder(BorderFactory.createTitledBorder("Menu principal"));
-
-        // FlowLayout igual ao ProdutoForm (coloca botões lado a lado automaticamente)
         menu.setLayout(new FlowLayout(FlowLayout.LEFT, 12, 10));
-
-        // Altura maior para suportar 2 linhas no futuro
         menu.setPreferredSize(new Dimension(0, 90));
 
-        // Botões com mesmo estilo do ProdutoForm (simples, sem emojis, sem estilo custom)
-        JButton btnProdutos     = new JButton("Produtos");
-        JButton btnEstoque      = new JButton("Estoque");
-        JButton btnclientes     = new JButton("clientes");
-        JButton btnclientepj     = new JButton("clientesPJ");
+        // Botões
+        JButton btnProdutos = new JButton("Produtos");
+        JButton btnEstoque = new JButton("Estoque");
+        JButton btnclientes = new JButton("clientes");
+        JButton btnclientepj = new JButton("clientesPJ");
         JButton btnFornecedores = new JButton("Fornecedores");
         JButton btnUsuarios = new JButton("Usuarios");
-        JButton btnCaixas       = new JButton("Caixas");
+        JButton btnCaixas = new JButton("Caixas");
         JButton btnConsultaVendas = new JButton("Consulta Vendas");
-        JButton btnImpressoras  = new JButton("Impressoras");
-        JButton btnAjuda        = new JButton("Ajuda");
-        JButton btnSairSistema  = new JButton("Sair do sistema");
-        // Adicionar botões (ordem igual à original)
+        JButton btnImpressoras = new JButton("Impressoras");
+        JButton btnAjuda = new JButton("Ajuda");
+        JButton btnSairSistema = new JButton("Sair do sistema");
+
+        // Adicionar botões
         menu.add(btnProdutos);
         menu.add(btnEstoque);
         menu.add(btnclientes);
@@ -99,18 +88,18 @@ public class MainWindow extends JFrame {
         menu.add(btnAjuda);
         menu.add(btnSairSistema);
 
-        // === AÇÕES ORIGINAIS ===
+        // === AÇÕES CORRIGIDAS ===
         btnProdutos.addActionListener(e -> abrirModulo(new ProdutoForm()));
         btnEstoque.addActionListener(e -> abrirModulo(new EstoqueForm()));
         btnclientes.addActionListener(e -> abrirModulo(new ClientesForm()));
         btnclientepj.addActionListener(e -> abrirModulo(new ClientepjForm()));
-
         btnFornecedores.addActionListener(e -> abrirModulo(new FornecedoresForm()));
         btnUsuarios.addActionListener(e -> abrirModulo(new CadastroUsuarioForm()));
-        btnCaixas.addActionListener(e -> abrirModulo(new CaixasForm(this)));
-        btnConsultaVendas.addActionListener(
-                e -> abrirModulo(new VendasConsultaForm(this))
-        );
+
+        // ✅ CORREÇÃO AQUI: Passando o usuarioLogado que guardamos no construtor
+        btnCaixas.addActionListener(e -> abrirModulo(new CaixasForm(this.usuarioLogado, this)));
+
+        btnConsultaVendas.addActionListener(e -> abrirModulo(new VendasConsultaForm(this)));
 
         btnImpressoras.addActionListener(e ->
                 JOptionPane.showMessageDialog(this, "Módulo Impressoras em desenvolvimento"));
@@ -120,22 +109,13 @@ public class MainWindow extends JFrame {
         return menu;
     }
 
-
-
-    /**
-     * Remove o conteúdo atual e adiciona o painel do módulo.
-     * O painel passado deve ser um JPanel (cada módulo: ProdutoForm, clientesForm, ...)
-     */
     public void abrirModulo(JPanel painel) {
         painelConteudo.removeAll();
         painelConteudo.add(painel, BorderLayout.CENTER);
         painelConteudo.revalidate();
         painelConteudo.repaint();
     }
-    /**
-     * Saida do sistema.
-     *
-     */
+
     public void confirmarSaida() {
         int resposta = JOptionPane.showConfirmDialog(
                 this,
@@ -148,12 +128,6 @@ public class MainWindow extends JFrame {
         if (resposta == JOptionPane.YES_OPTION) {
             Sessao.logout();
             System.exit(0);
-
         }
     }
 }
-
-
-
-
-

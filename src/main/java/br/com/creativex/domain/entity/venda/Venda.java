@@ -9,7 +9,10 @@ public class Venda {
     private Long idVenda;
     private Long idUsuario;
     private Long idCliente;
-
+    private String nomeClienteAvulso;
+    private String cpfAvulso;
+    private String clienteNome;
+    private String usuarioNome;
     private BigDecimal totalBruto = BigDecimal.ZERO;
     private BigDecimal totalDesconto = BigDecimal.ZERO;
     private BigDecimal totalLiquido = BigDecimal.ZERO;
@@ -36,16 +39,52 @@ public class Venda {
 
         totalLiquido = totalBruto.subtract(totalDesconto);
     }
+    public boolean isClienteAvulso() {
+        return idCliente == null;
+    }
+//
+public String getClienteNome() {
+    return clienteNome;
+}
 
+    public String getUsuarioNome() {
+        return usuarioNome;
+    }
+//
+    public String getNomeClienteExibicao() {
+        return (idCliente != null) ? null :
+                (nomeClienteAvulso != null ? nomeClienteAvulso : "NÃO INFORMADO");
+    }
+
+    //regra de negócio aqui só pra facilitar a vida
+    public void validarCliente() {
+        if (idCliente == null && (nomeClienteAvulso == null || nomeClienteAvulso.isEmpty())) {
+            throw new IllegalStateException("Venda sem identificação de cliente");
+        }
+    }
+    public void setClienteNome(String clienteNome) {
+        this.clienteNome = clienteNome;
+    }
+
+    public void setUsuarioNome(String usuarioNome) {
+        this.usuarioNome = usuarioNome;
+    }
     // =========================
     // GETTERS E SETTERS
     // =========================
+
     public Long getIdVenda() { return idVenda; }
     public void setIdVenda(Long idVenda) { this.idVenda = idVenda; }
     public Long getIdUsuario() { return idUsuario; }
     public void setIdUsuario(Long idUsuario) { this.idUsuario = idUsuario; }
     public Long getIdCliente() { return idCliente; }
     public void setIdCliente(Long idCliente) { this.idCliente = idCliente; }
+    public String getNomeClienteAvulso() { return nomeClienteAvulso; }
+    public void setNomeClienteAvulso(String nomeClienteAvulso) { this.nomeClienteAvulso = nomeClienteAvulso; }
+
+    public String getCpfAvulso() { return cpfAvulso; }
+    public void setCpfAvulso(String cpfAvulso) { this.cpfAvulso = cpfAvulso; }
+
     public java.math.BigDecimal getTotalBruto() { return totalBruto; }
     public void setTotalBruto(java.math.BigDecimal totalBruto) { this.totalBruto = totalBruto; }
     public java.math.BigDecimal getTotalDesconto() { return totalDesconto; }

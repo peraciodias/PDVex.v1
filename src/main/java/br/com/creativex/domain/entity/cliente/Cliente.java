@@ -3,22 +3,59 @@ package br.com.creativex.domain.entity.cliente;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
+/**
+ * Entidade que representa um cliente pessoa física no sistema ERP-PDVex.
+ * 
+ * Encapsula dados pessoais, de contato, endereço e informações comerciais
+ * (limite de crédito) de um cliente. Utilizada para gerenciamento de clientes
+ * e operações de vendas.
+ * 
+ * @author Peracio Dias
+ * @version 1.0
+ * @since 2026-02-01
+ */
 public class Cliente {
 
+    /** Identificador único do cliente */
     private Long id;
+    
+    /** Nome completo do cliente */
     private String nome;
+    
+    /** Cadastro de Pessoa Física (CPF) */
     private String cpf;
+    
+    /** Registro Geral (RG) */
     private String rg;
+    
+    /** Telefone de contato */
     private String telefone;
+    
+    /** Email do cliente */
     private String email;
+    
+    /** Logradouro do endereço */
     private String endereco;
+    
+    /** Número do imóvel */
     private String numero;
+    
+    /** Bairro */
     private String bairro;
+    
+    /** Cidade */
     private String cidade;
+    
+    /** Unidade federativa (estado) */
     private String uf;
+    
+    /** Código de endereçamento postal (CEP) */
     private String cep;
 
+    /** Limite de crédito disponível para compras */
     private BigDecimal limiteCredito;
+    
+    /** Data e hora do cadastro do cliente */
     private Timestamp dataCadastro;
 
     public Long getId() { return id; }

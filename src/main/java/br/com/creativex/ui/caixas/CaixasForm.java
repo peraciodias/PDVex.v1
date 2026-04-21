@@ -1,80 +1,80 @@
-// Peracio Dias
-//creativex sistemas
 package br.com.creativex.ui.caixas;
 
+import br.com.creativex.domain.entity.usuario.Usuario;
 import br.com.creativex.domain.entity.venda.ItemVenda;
 import br.com.creativex.domain.entity.venda.Venda;
 import br.com.creativex.domain.entity.produto.Produto;
 import br.com.creativex.config.AppFactory;
 import br.com.creativex.presentation.controller.CaixaController;
 import br.com.creativex.presentation.controller.ProdutoController;
-import br.com.creativex.util.Sessao;
 import br.com.creativex.ui.HomeScreen;
 import br.com.creativex.ui.MainWindow;
+
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 
 public class CaixasForm extends JPanel {
+
     private JTextField txtCodigoBarras, txtQuantidade, txtTotalVenda;
-    private JTable tableCarrinho;
-    private DefaultTableModel modelCarrinho;
+    private JTextArea areaCupom;
     private JButton btnFinalizar, btnRemoverItem, btnVoltar;
 
-    // Objetos de controle
-    private Venda vendaAtual = new Venda();
-    private final CaixaController caixaController;
-    private final ProdutoController produtoController;
-    private final NumberFormat nf = NumberFormat.getCurrencyInstance(java.util.Locale.of("pt", "BR"));
+    private Usuario usuario;
     private MainWindow mainWindow;
 
-    public CaixasForm() {
-        setLayout(new BorderLayout(15, 15));
-        setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        this.mainWindow = (MainWindow) SwingUtilities.getWindowAncestor(this);
+    private final CaixaController caixaController;
+    private final ProdutoController produtoController;
+
+    private Venda vendaAtual = new Venda();
+    private final NumberFormat nf = NumberFormat.getCurrencyInstance(java.util.Locale.of("pt", "BR"));
+
+    public CaixasForm(Usuario usuario, MainWindow mainWindow) {
+        this.usuario = usuario;
+        this.mainWindow = mainWindow;
+
         this.caixaController = AppFactory.caixaController();
         this.produtoController = AppFactory.produtoController();
 
-        initComponents();
-        configurarAtalhos();
-    }
-    
-    public CaixasForm(MainWindow mainWindow) {
         setLayout(new BorderLayout(15, 15));
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        this.mainWindow = mainWindow;
-        this.caixaController = AppFactory.caixaController();
-        this.produtoController = AppFactory.produtoController();
 
         initComponents();
         configurarAtalhos();
     }
 
     private void initComponents() {
-        // --- TOPO: ENTRADA ---
-
-        JPanel pnlTopo = new JPanel(new GridLayout(1, 4, 10, 10));
+        // CAMPOS DE ENTRADA
         txtCodigoBarras = new JTextField();
         txtCodigoBarras.setFont(new Font("SansSerif", Font.BOLD, 18));
 
         txtQuantidade = new JTextField("1");
         txtQuantidade.setFont(new Font("SansSerif", Font.BOLD, 18));
 
-        pnlTopo.add(new JLabel("CÓDIGO DE BARRAS / ID:"));
-        pnlTopo.add(txtCodigoBarras);
-        pnlTopo.add(new JLabel("QUANTIDADE:"));
-        pnlTopo.add(txtQuantidade);
+        JPanel pnlTopo = new JPanel(new BorderLayout());
+        JPanel entrada = new JPanel(new GridLayout(1, 4, 10, 10));
+        entrada.add(new JLabel("CÓDIGO DE BARRAS / ID:"));
+        entrada.add(txtCodigoBarras);
+        entrada.add(new JLabel("QUANTIDADE:"));
+        entrada.add(txtQuantidade);
 
-        // --- CENTRO: TABELA ---
-        modelCarrinho = new DefaultTableModel(new String[]{"Item", "Cód", "Descrição", "Qtd", "V. Unit", "Subtotal"}, 0);
-        tableCarrinho = new JTable(modelCarrinho);
-        tableCarrinho.setRowHeight(30);
-        tableCarrinho.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        JLabel lblOperador = new JLabel("Operador: " + usuario.getNome());
+        lblOperador.setFont(new Font("SansSerif", Font.BOLD, 14));
 
-        // --- DIREITA: TOTAIS E AÇÕES ---
+        pnlTopo.add(entrada, BorderLayout.CENTER);
+        pnlTopo.add(lblOperador, BorderLayout.EAST);
+
+        // ÁREA DE CUPOM
+        areaCupom = new JTextArea();
+        areaCupom.setEditable(false);
+        areaCupom.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        areaCupom.setBackground(Color.WHITE);
+
+        JScrollPane scrollCupom = new JScrollPane(areaCupom);
+
+        // PAINEL DE AÇÕES
         JPanel pnlAcoes = new JPanel();
         pnlAcoes.setLayout(new BoxLayout(pnlAcoes, BoxLayout.Y_AXIS));
         pnlAcoes.setPreferredSize(new Dimension(250, 0));
@@ -89,10 +89,8 @@ public class CaixasForm extends JPanel {
         btnFinalizar = new JButton("FINALIZAR (F12)");
         btnFinalizar.setBackground(new Color(0, 153, 51));
         btnFinalizar.setForeground(Color.WHITE);
-        btnFinalizar.setFont(new Font("SansSerif", Font.BOLD, 16));
 
         btnRemoverItem = new JButton("Remover Item (DEL)");
-        
         btnVoltar = new JButton("Voltar");
 
         pnlAcoes.add(new JLabel("TOTAL DA VENDA:"));
@@ -105,7 +103,7 @@ public class CaixasForm extends JPanel {
         pnlAcoes.add(btnVoltar);
 
         add(pnlTopo, BorderLayout.NORTH);
-        add(new JScrollPane(tableCarrinho), BorderLayout.CENTER);
+        add(scrollCupom, BorderLayout.CENTER);
         add(pnlAcoes, BorderLayout.EAST);
 
         configurarEventos();
@@ -114,10 +112,32 @@ public class CaixasForm extends JPanel {
     private void configurarEventos() {
         txtCodigoBarras.addActionListener(e -> adicionarProdutoPeloCodigo());
         btnFinalizar.addActionListener(e -> finalizarVenda());
-        btnRemoverItem.addActionListener(e -> removerItemSelecionado());
+        btnRemoverItem.addActionListener(e -> removerItemPorSeqDialog());
         btnVoltar.addActionListener(e -> voltarParaHome());
     }
-    
+
+    private void configurarAtalhos() {
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_F12, 0), "finalizar");
+
+        this.getActionMap().put("finalizar", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                finalizarVenda();
+            }
+        });
+
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "remover");
+
+        this.getActionMap().put("remover", new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                removerItemPorSeqDialog();
+            }
+        });
+    }
+
     private void voltarParaHome() {
         if (mainWindow != null) {
             mainWindow.abrirModulo(new HomeScreen());
@@ -138,21 +158,15 @@ public class CaixasForm extends JPanel {
         if (filtro.isEmpty()) return;
 
         try {
-            Produto p = buscarProdutoPorFiltro(filtro);
-            if (p != null) {
+            Produto p = produtoController.buscarPorCodigoBarra(filtro);
 
-                // 🔴 VALIDAÇÃO DE ESTOQUE (INSERIR AQUI)
+            if (p != null) {
                 if (p.getQuantidadeEstoque().compareTo(qtd) < 0) {
-                    JOptionPane.showMessageDialog(
-                            this,
-                            "Estoque insuficiente!\nDisponível: " + p.getQuantidadeEstoque(),
-                            "Atenção",
-                            JOptionPane.WARNING_MESSAGE
-                    );
+                    JOptionPane.showMessageDialog(this,
+                            "Estoque insuficiente!\nDisponível: " + p.getQuantidadeEstoque());
                     return;
                 }
 
-                // Criação do item somente se houver estoque
                 ItemVenda item = new ItemVenda(
                         p.getId(),
                         p.getDescricao(),
@@ -160,107 +174,137 @@ public class CaixasForm extends JPanel {
                         p.getPrecoVenda()
                 );
 
-		// snapshots obrigatórios (nova modelagem)
-				item.setPrecoCustoMomento(p.getPrecoCusto());
-				item.setCstFiscalMomento(p.getCstIcms());
+                item.setPrecoCustoMomento(p.getPrecoCusto());
+                item.setCstFiscalMomento(p.getCstIcms());
 
-		// ADICIONA NO MODEL
-				vendaAtual.adicionarItem(item);
+                vendaAtual.adicionarItem(item);
 
-                modelCarrinho.addRow(new Object[]{
-                        modelCarrinho.getRowCount() + 1,
-                        p.getId(),
-                        p.getDescricao(),
-                        qtd,
-                        nf.format(p.getPrecoVenda()),
-                        nf.format(item.getSubtotal())
-                });
-
+                atualizarCupom();
                 atualizarExibicaoTotal();
                 limparCamposInput();
-            } else {
-                JOptionPane.showMessageDialog(this, "Produto não encontrado!");
-                txtCodigoBarras.selectAll();
-                txtCodigoBarras.requestFocus();
             }
+
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Erro ao acessar banco: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Erro: " + ex.getMessage());
         }
-    }
-
-    private Produto buscarProdutoPorFiltro(String filtro) {
-        Produto porCodigo = produtoController.buscarPorCodigoBarra(filtro);
-        if (porCodigo != null) return porCodigo;
-
-        if (filtro.matches("\\d+")) {
-            Produto porId = produtoController.buscarPorId(Long.parseLong(filtro));
-            if (porId != null) return porId;
-        }
-
-        return produtoController.buscarPorNome(filtro);
     }
 
     private void finalizarVenda() {
         if (vendaAtual.getItens().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Não há itens no carrinho!", "Aviso", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Carrinho vazio!");
             return;
         }
 
-        Window parentWindow = SwingUtilities.getWindowAncestor(this);
-        FinalizarVendaDialog dialog = new FinalizarVendaDialog( (Frame) parentWindow, vendaAtual.getTotalLiquido());
+        vendaAtual.recalcularTotais();
 
+        Window window = SwingUtilities.getWindowAncestor(this);
+        Frame parent = (window instanceof Frame) ? (Frame) window : null;
+        FinalizarVendaDialog dialog = new FinalizarVendaDialog(parent, vendaAtual.getTotalLiquido());
         dialog.setVisible(true);
 
-        if (dialog.isVendaConfirmada()) {
-            try {
-                vendaAtual.setMetodoPagamento(dialog.getMetodoSelecionado());
+        if (!dialog.isVendaConfirmada()) {
+            return;
+        }
 
-                vendaAtual.setIdUsuario(
-                        Sessao.getUsuarioLogado().getId()
-                );
-                caixaController.finalizarVenda(vendaAtual);
-                vendaAtual.setValorPago(dialog.getValorPago());
-                vendaAtual.setTroco(dialog.getTroco());
-
-                JOptionPane.showMessageDialog(this, "Venda concluída com sucesso!");
-                limparVenda();
-
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Erro crítico ao gravar venda: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        try {
+            if (dialog.getMetodoSelecionado() == null) {
+                JOptionPane.showMessageDialog(this, "Selecione a forma de pagamento.");
+                return;
             }
+
+            BigDecimal valorPago = dialog.getValorPago();
+            if (valorPago == null) {
+                valorPago = BigDecimal.ZERO;
+            }
+
+            vendaAtual.setIdUsuario(usuario.getId());
+            vendaAtual.setMetodoPagamento(dialog.getMetodoSelecionado());
+            vendaAtual.setValorPago(valorPago);
+            vendaAtual.setTroco(dialog.getTroco());
+
+            if (valorPago.compareTo(vendaAtual.getTotalLiquido()) < 0) {
+                JOptionPane.showMessageDialog(this,
+                        "Valor pago é menor que o total da venda!");
+                return;
+            }
+
+            caixaController.finalizarVenda(vendaAtual);
+
+            JOptionPane.showMessageDialog(this, "Venda concluída!");
+            limparVenda();
+
+        } catch (Exception ex) {
+            String mensagem = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
+            JOptionPane.showMessageDialog(this, "Erro: " + mensagem);
         }
     }
 
-    private void removerItemSelecionado() {
-        int row = tableCarrinho.getSelectedRow(); // Pega a linha selecionada pelo mouse
-
-        if (row != -1) {
-            // 1. Remove da lista lógica (Model)
-            vendaAtual.getItens().remove(row);
-
-            // 2. Remove da tabela visual (UI)
-            modelCarrinho.removeRow(row);
-
-            // 3. Recalcula o total
-            vendaAtual.recalcularTotais();
-            atualizarExibicaoTotal();
-
-            // 4. Reorganiza os números da coluna "Item" (1, 2, 3...)
-            for (int i = 0; i < modelCarrinho.getRowCount(); i++) {
-                modelCarrinho.setValueAt(i + 1, i, 0);
-            }
-
-            txtCodigoBarras.requestFocus();
-        } else {
-            JOptionPane.showMessageDialog(this, "Selecione um item na tabela para remover.");
+    private void removerItemPorSeqDialog() {
+        if (vendaAtual.getItens().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Nenhum item no cupom!");
+            return;
         }
+
+        String input = JOptionPane.showInputDialog(this,
+                "Digite o número SEQ do item a remover:");
+
+        if (input == null || input.trim().isEmpty()) return;
+
+        try {
+            int seq = Integer.parseInt(input.trim());
+            removerItemPorSeq(seq);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Número inválido!");
+        }
+    }
+
+    private void removerItemPorSeq(int seq) {
+        if (seq <= 0 || seq > vendaAtual.getItens().size()) {
+            JOptionPane.showMessageDialog(this, "SEQ inexistente!");
+            return;
+        }
+
+        vendaAtual.getItens().remove(seq - 1);
+
+        vendaAtual.recalcularTotais();
+        atualizarCupom();
+        atualizarExibicaoTotal();
+    }
+
+    private void atualizarCupom() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("+-------------------------------------------------------------------+\n");
+        sb.append("!Operador: ").append(usuario.getNome()).append("! \n");
+        sb.append("+-------------------------------------------------------------------+\n");
+
+        sb.append(String.format("%-4s %-8s %-20s %-6s %-4s %-12s %-12s\n",
+                "SEQ", "CÓDIGO", "DESCRIÇÃO", "QTDE", "UN", "VALOR UN", "SB TOT"));
+        sb.append("+-------------------------------------------------------------------+\n");
+
+        int seq = 1;
+        for (ItemVenda item : vendaAtual.getItens()) {
+            sb.append(String.format("%-4d %-8s %-20s %-6s %-4s %-12s %-12s\n",
+                    seq++,
+                    item.getIdProduto(),
+                    item.getNomeProduto(),
+                    item.getQuantidade(),
+                    "UN",
+                    nf.format(item.getPrecoUnitario()),
+                    nf.format(item.getSubtotal())
+            ));
+        }
+
+        sb.append("+--------------------------------------------------------------------+\n");
+        sb.append("!TOTAL: ").append(nf.format(vendaAtual.getTotalLiquido())).append(" !\n");
+        sb.append("+--------------------------------------------------------------------+\n");
+
+        areaCupom.setText(sb.toString());
     }
 
     private void atualizarExibicaoTotal() {
         vendaAtual.recalcularTotais();
-        txtTotalVenda.setText(
-                nf.format(vendaAtual.getTotalLiquido())
-        );
+        txtTotalVenda.setText(nf.format(vendaAtual.getTotalLiquido()));
     }
 
     private void limparCamposInput() {
@@ -271,18 +315,8 @@ public class CaixasForm extends JPanel {
 
     private void limparVenda() {
         vendaAtual = new Venda();
-        modelCarrinho.setRowCount(0);
+        areaCupom.setText("");
         txtTotalVenda.setText("R$ 0,00");
         limparCamposInput();
-    }
-
-    private void configurarAtalhos() {
-        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_F12, 0), "finalizar");
-        this.getActionMap().put("finalizar", new AbstractAction() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                finalizarVenda();
-            }
-        });
     }
 }

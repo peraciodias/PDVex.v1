@@ -25,22 +25,56 @@ import br.com.creativex.application.produto.CreateProdutoUseCase;
 import br.com.creativex.domain.repository.VendaConsultaRepository;
 import br.com.creativex.domain.repository.VendaRepository;
 
+/**
+ * Factory centralizada para injeção de dependências (Dependency Injection).
+ * 
+ * Implementa o padrão Factory para criar e orquestrar a composição de objetos,
+ * conectando Controllers → Use Cases → Repositories (adapters JDBC) → DAOs.
+ * Centralizando assim a criação de instâncias e mantendo a flexibilidade de
+ * alterações na estrutura de dependências.
+ * 
+ * @author Peracio Dias
+ * @version 1.0
+ * @since 2026-02-01
+ */
 public final class AppFactory {
 
+    /**
+     * Construtor privado para impedir instanciação da classe.
+     */
     private AppFactory() {}
 
+    /**
+     * Cria e retorna a instância do ClienteController com suas dependências.
+     * 
+     * @return ClienteController configurado com DAO e Repository
+     */
     public static ClienteController clienteController() {
         ClienteDAO dao = new ClienteDAO();
         ClienteRepositoryJdbcAdapter repo = new ClienteRepositoryJdbcAdapter(dao);
         return new ClienteController(repo);
     }
 
+    /**
+     * Cria e retorna a instância do FornecedorController com suas dependências.
+     * 
+     * @return FornecedorController configurado com DAO e Repository
+     */
     public static FornecedorController fornecedorController() {
         FornecedorDAO dao = new FornecedorDAO();
         FornecedorRepositoryJdbcAdapter repo = new FornecedorRepositoryJdbcAdapter(dao);
         return new FornecedorController(repo);
     }
 
+    /**
+     * Cria e retorna a instância do ProdutoController com suas dependências.
+     * 
+     * Orquestra a criação do CreateProdutoUseCase com transações gerenciadas
+     * para operações de criação de produtos.
+     * 
+     * @return ProdutoController configurado com use case e repository
+     * @throws RuntimeException Se falhar ao obter conexão com o banco de dados
+     */
     public static ProdutoController produtoController() {
         try {
             var conn = br.com.creativex.db.Conexao.getConnection();
@@ -54,12 +88,24 @@ public final class AppFactory {
         }
     }
 
+    /**
+     * Cria e retorna a instância do ClientepjController com suas dependências.
+     * 
+     * @return ClientepjController configurado com DAO e Repository
+     */
     public static ClientepjController clientepjController() {
         br.com.creativex.infrastructure.persistence.repository.clientepj.ClientepjDAO dao = new br.com.creativex.infrastructure.persistence.repository.clientepj.ClientepjDAO();
         br.com.creativex.infrastructure.persistence.repository.clientepj.ClientepjRepositoryJdbcAdapter repo = new br.com.creativex.infrastructure.persistence.repository.clientepj.ClientepjRepositoryJdbcAdapter(dao);
         return new ClientepjController(repo);
     }
 
+    /**
+     * Cria e retorna a instância do CaixaController com suas dependências.
+     * 
+     * Configura o FinalizeVendaUseCase para operações de finalização de vendas.
+     * 
+     * @return CaixaController configurado com use case e repository de vendas
+     */
     public static CaixaController caixaController() {
         VendaDAO vendaDAO = new VendaDAO();
         VendaRepository vendaRepo = new VendaRepositoryJdbcAdapter(vendaDAO);
@@ -67,12 +113,27 @@ public final class AppFactory {
         return new CaixaController(finalizeUseCase, vendaRepo);
     }
 
+    /**
+     * Cria e retorna a instância do VendasConsultaController com suas dependências.
+     * 
+     * Configura o ListarVendasUseCase para consultas e relatórios de vendas.
+     * 
+     * @return VendasConsultaController configurado com use case de consulta
+     */
     public static VendasConsultaController vendasConsultaController() {
         VendaConsultaRepository consultaRepository = new VendaConsultaRepositoryJdbcAdapter();
         ListarVendasUseCase listarVendasUseCase = new ListarVendasUseCase(consultaRepository);
         return new VendasConsultaController(caixaController(), listarVendasUseCase);
     }
 
+    /**
+     * Cria e retorna a instância do UsuarioController com suas dependências.
+     * 
+     * Configura o UsuarioUseCases para operações de autenticação e gerenciamento
+     * de usuários.
+     * 
+     * @return UsuarioController configurado com use cases de usuário
+     */
     public static UsuarioController usuarioController() {
         UsuarioDAO dao = new UsuarioDAO();
         UsuarioRepositoryJdbcAdapter repo = new UsuarioRepositoryJdbcAdapter(dao);

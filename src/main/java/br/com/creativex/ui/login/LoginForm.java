@@ -60,7 +60,7 @@ public class LoginForm extends JFrame {
 
         if (usuario != null) {
             Sessao.login(usuario);          // 🔥 aqui está o ponto-chave
-            new MainWindow().setVisible(true);
+            new MainWindow(usuario).setVisible(true);
             dispose();
         } else {
             JOptionPane.showMessageDialog(this, "Login ou senha inválidos.");

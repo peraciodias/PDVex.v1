@@ -1,13 +1,27 @@
-// Peracio Dias
-//creativex sistemas
-
 package br.com.creativex.ui;
 
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Painel de tela inicial da aplicação ERP-PDVex.
+ * 
+ * Exibe a página inicial com logo, título e subtítulo do sistema.
+ * Implementa um painel visualmente agradável com layout centralizado
+ * e estilo compatível com o tema visual geral da aplicação.
+ * 
+ * @author Peracio Dias
+ * @version 1.0
+ * @since 2026-02-01
+ */
 public class HomeScreen extends JPanel {
 
+    /**
+     * Construtor que inicializa o painel de tela inicial.
+     * 
+     * Configura o layout, cores, fontes e carrega a logo e textos
+     * informativos sobre o sistema.
+     */
     public HomeScreen() {
         setLayout(new BorderLayout());
         setBackground(new Color(245, 245, 245));
