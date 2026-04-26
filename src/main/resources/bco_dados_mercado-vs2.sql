@@ -8,10 +8,37 @@
 -- Limpeza opcional (CUIDADO: remove os dados se já existirem)
 -- DROP SCHEMA public CASCADE;
 -- CREATE SCHEMA public;
+-- Transfere a propriedade de todas as tabelas no esquema public para o pera
+-- Isso garante que ele possa fazer SELECT, INSERT, UPDATE e DELETE sem restrições
+
+--executar essa linha após criar as tabelas -> GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO pera;
+
+-- MUITO IMPORTANTE: Garante permissão nas Sequências (os IDs automáticos)
+-- Sem isso, o Java falha ao tentar gerar um novo ID de venda
+
+--executar essa linha após criar as tabelas -> GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO pera;
+
+-- Define que todas as tabelas criadas no futuro também pertencerão ao pera
+
+--executar essa linha após criar as tabelas -> ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO pera;
 
 --------------------------------------------------------------------------------
 -- 1. TABELAS SEM DEPENDÊNCIAS (TABELAS PAI)
 --------------------------------------------------------------------------------
+CREATE TABLE tabela_estabelecimento (
+    id SERIAL PRIMARY KEY,
+    razao_social VARCHAR(150) NOT NULL,
+    nome_fantasia VARCHAR(150),
+    cnpj VARCHAR(18) UNIQUE NOT NULL,
+    inscricao_estadual VARCHAR(20),
+    logradouro VARCHAR(150),
+    numero VARCHAR(20),
+    bairro VARCHAR(100),
+    cidade VARCHAR(100),
+    estado CHAR(2),
+    regime_tributario INT DEFAULT 1, -- 1: Simples Nacional, 3: Regime Normal
+    aliq_ibpt DECIMAL(5,2) DEFAULT 13.45 -- Alíquota média para Lei da Transparência
+);
 
 CREATE TABLE public.tabela_usuarios (
     id BIGSERIAL PRIMARY KEY,
@@ -129,8 +156,8 @@ CREATE TABLE public.tabela_vendas (
     
     total_bruto NUMERIC(10,2) NOT NULL,
     total_desconto NUMERIC(10,2) DEFAULT 0.00,
-    total_liquido NUMERIC(10,2) NOT NULL,
-    
+	total_liquido NUMERIC(10,2) NOT NULL,
+    total_tributos NUMERIC(10,2) DEFAULT 0.00,
     status VARCHAR(20) DEFAULT 'CONCLUIDA',
     metodo_pagamento VARCHAR(50) NOT NULL,
     

@@ -272,36 +272,34 @@ public class CaixasForm extends JPanel {
     }
 
     private void atualizarCupom() {
-        StringBuilder sb = new StringBuilder();
+    StringBuilder sb = new StringBuilder();
+    
+    // Cabeçalho Dinâmico (Simulando que você já carregou o objeto 'estabelecimento')
+    sb.append("              ").append("NOME DA SUA LOJA").append("\n");
+    sb.append("      CNPJ: 00.000.000/0001-00  IE: 123456789\n");
+    sb.append("-------------------------------------------------------------------\n");
+    sb.append(String.format("%-4s %-8s %-20s %-6s %-12s\n", "SEQ", "CÓD", "DESC", "QTD", "VALOR"));
+    sb.append("-------------------------------------------------------------------\n");
 
-        sb.append("+-------------------------------------------------------------------+\n");
-        sb.append("!Operador: ").append(usuario.getNome()).append("! \n");
-        sb.append("+-------------------------------------------------------------------+\n");
-
-        sb.append(String.format("%-4s %-8s %-20s %-6s %-4s %-12s %-12s\n",
-                "SEQ", "CÓDIGO", "DESCRIÇÃO", "QTDE", "UN", "VALOR UN", "SB TOT"));
-        sb.append("+-------------------------------------------------------------------+\n");
-
-        int seq = 1;
-        for (ItemVenda item : vendaAtual.getItens()) {
-            sb.append(String.format("%-4d %-8s %-20s %-6s %-4s %-12s %-12s\n",
-                    seq++,
-                    item.getIdProduto(),
-                    item.getNomeProduto(),
-                    item.getQuantidade(),
-                    "UN",
-                    nf.format(item.getPrecoUnitario()),
-                    nf.format(item.getSubtotal())
-            ));
-        }
-
-        sb.append("+--------------------------------------------------------------------+\n");
-        sb.append("!TOTAL: ").append(nf.format(vendaAtual.getTotalLiquido())).append(" !\n");
-        sb.append("+--------------------------------------------------------------------+\n");
-
-        areaCupom.setText(sb.toString());
+    int seq = 1;
+    for (ItemVenda item : vendaAtual.getItens()) {
+        sb.append(String.format("%03d  %-8d %-20.20s %-6s %-12s\n", 
+            seq++, item.getIdProduto(), item.getNomeProduto(), item.getQuantidade(), nf.format(item.getSubtotal())));
     }
 
+    // Rodapé Fiscal
+    BigDecimal tributos = vendaAtual.getTotalLiquido().multiply(new BigDecimal("0.1345"));
+    
+    sb.append("-------------------------------------------------------------------\n");
+    sb.append(String.format("TOTAL LIQUIDO: %s\n", nf.format(vendaAtual.getTotalLiquido())));
+    sb.append(String.format("VALOR PAGO:    %s\n", nf.format(vendaAtual.getValorPago() != null ? vendaAtual.getValorPago() : BigDecimal.ZERO)));
+    sb.append(String.format("TROCO:         %s\n", nf.format(vendaAtual.getTroco() != null ? vendaAtual.getTroco() : BigDecimal.ZERO)));
+    sb.append("-------------------------------------------------------------------\n");
+    sb.append("Trib. aprox.: ").append(nf.format(tributos)).append(" (Lei Fed. 12.741/12)\n");
+    sb.append("       OBRIGADO PELA PREFERENCIA!       \n");
+
+    areaCupom.setText(sb.toString());
+}
     private void atualizarExibicaoTotal() {
         vendaAtual.recalcularTotais();
         txtTotalVenda.setText(nf.format(vendaAtual.getTotalLiquido()));

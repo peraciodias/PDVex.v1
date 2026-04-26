@@ -20,15 +20,14 @@ public class VendaDAO {
             venda.setNomeClienteAvulso("NÃO INFORMADO");
         }
 
-
         String sqlVenda = """
-          INSERT INTO tabela_vendas
-           (id_usuario, id_cliente, nome_cliente_avulso, cpf_avulso,
-           total_bruto, total_desconto, total_liquido,
-           metodo_pagamento, valor_pago, troco)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-           RETURNING id_venda
-        """;
+            INSERT INTO tabela_vendas 
+            (id_usuario, id_cliente, nome_cliente_avulso, cpf_avulso, 
+            total_bruto, total_desconto, total_liquido, total_tributos,
+            metodo_pagamento, valor_pago, troco)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            RETURNING id_venda
+            """;
 
         String sqlItem = """
             INSERT INTO tabela_itens_venda
@@ -58,40 +57,42 @@ public class VendaDAO {
             conn.setAutoCommit(false);
 
             // 1️⃣ Grava VENDA
+
             long idVenda;
+            BigDecimal totalTributos = venda.getTotalLiquido().multiply(new BigDecimal("0.1345")); 
+
             try (PreparedStatement ps = conn.prepareStatement(sqlVenda)) {
                 ps.setLong(1, venda.getIdUsuario());
+                
                 if (venda.getIdCliente() != null) {
                     ps.setLong(2, venda.getIdCliente());
                 } else {
                     ps.setNull(2, Types.BIGINT);
                 }
 
-                if (venda.getNomeClienteAvulso() != null) {
-                    ps.setString(3, venda.getNomeClienteAvulso());
-                } else {
-                    ps.setNull(3, Types.VARCHAR);
-                }
-
+                ps.setString(3, (venda.getNomeClienteAvulso() != null) ? venda.getNomeClienteAvulso() : "NÃO INFORMADO");
+                
                 if (venda.getCpfAvulso() != null) {
                     ps.setString(4, venda.getCpfAvulso());
                 } else {
                     ps.setNull(4, Types.VARCHAR);
-                }
+                }   
 
-                ps.setBigDecimal(5, venda.getTotalBruto());
-                ps.setBigDecimal(6, venda.getTotalDesconto());
-                ps.setBigDecimal(7, venda.getTotalLiquido());
-                ps.setString(8, venda.getMetodoPagamento());
-                ps.setBigDecimal(9, venda.getValorPago());
-                ps.setBigDecimal(10, venda.getTroco());
+                // Alinhando com a ordem do seu SQL INSERT:
+                ps.setBigDecimal(5, venda.getTotalBruto());      // total_bruto
+                ps.setBigDecimal(6, venda.getTotalDesconto());   // total_desconto
+                ps.setBigDecimal(7, venda.getTotalLiquido());    // total_liquido
+                ps.setBigDecimal(8, totalTributos);              // total_tributos (O NOVO CAMPO)
+                ps.setString(9, venda.getMetodoPagamento());     // metodo_pagamento (SUBIU PARA 9)
+                ps.setBigDecimal(10, venda.getValorPago());      // valor_pago (SUBIU PARA 10)
+                ps.setBigDecimal(11, venda.getTroco());          // troco (SUBIU PARA 11)
+
                 ResultSet rs = ps.executeQuery();
                 if (!rs.next()) {
                     throw new SQLException("Erro ao gerar ID da venda.");
                 }
                 idVenda = rs.getLong("id_venda");
             }
-
             // 2️⃣ Itens + estoque + movimentação
             for (ItemVenda item : venda.getItens()) {
 
@@ -157,16 +158,16 @@ public class VendaDAO {
     public void cancelarVenda(long idVenda, long idUsuario) throws SQLException {
 
         String sqlBuscaItens = """
-        SELECT id_produto, quantidade
-        FROM tabela_itens_venda
-        WHERE id_venda = ?
-    """;
+            SELECT id_produto, quantidade
+            FROM tabela_itens_venda
+            WHERE id_venda = ?
+        """;
 
         String sqlAtualizaStatus = """
-        UPDATE tabela_vendas
-        SET status = 'CANCELADA'
-        WHERE id_venda = ?
-    """;
+            UPDATE tabela_vendas
+            SET status = 'CANCELADA'
+            WHERE id_venda = ?
+        """;
 
         String sqlSaldoAtual =
                 "SELECT quantidade_estoque FROM tabela_produtos WHERE id = ? FOR UPDATE";
@@ -175,12 +176,12 @@ public class VendaDAO {
                 "UPDATE tabela_produtos SET quantidade_estoque = quantidade_estoque + ? WHERE id = ?";
 
         String sqlMov = """
-        INSERT INTO tabela_movimentacoes_estoque
-        (id_produto, tipo, quantidade,
-         saldo_anterior, saldo_posterior,
-         motivo, id_usuario, id_venda_origem)
-        VALUES (?, 'ENTRADA', ?, ?, ?, 'ESTORNO VENDA', ?, ?)
-    """;
+            INSERT INTO tabela_movimentacoes_estoque
+            (id_produto, tipo, quantidade,
+             saldo_anterior, saldo_posterior,
+             motivo, id_usuario, id_venda_origem)
+            VALUES (?, 'ENTRADA', ?, ?, ?, 'ESTORNO VENDA', ?, ?)
+        """;
 
         Connection conn = Conexao.getConnection();
 
