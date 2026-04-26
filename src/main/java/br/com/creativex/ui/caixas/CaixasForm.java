@@ -17,7 +17,10 @@ import java.math.BigDecimal;
 import java.text.NumberFormat;
 
 public class CaixasForm extends JPanel {
-
+//-> 25/04
+    private JPanel painelItemAtual;
+    private JLabel lblItemAtual;
+//<-
     private JTextField txtCodigoBarras, txtQuantidade, txtTotalVenda;
     private JTextArea areaCupom;
     private JButton btnFinalizar, btnRemoverItem, btnVoltar;
@@ -54,6 +57,18 @@ public class CaixasForm extends JPanel {
         txtQuantidade.setFont(new Font("SansSerif", Font.BOLD, 18));
 
         JPanel pnlTopo = new JPanel(new BorderLayout());
+      //->
+        painelItemAtual = new JPanel(new BorderLayout());
+        painelItemAtual.setBackground(Color.BLACK);
+        painelItemAtual.setPreferredSize(new Dimension(100, 60));
+
+        lblItemAtual = new JLabel("AGUARDANDO PRODUTO...");
+        lblItemAtual.setForeground(Color.GREEN);
+        lblItemAtual.setFont(new Font("Monospaced", Font.BOLD, 26));
+        lblItemAtual.setHorizontalAlignment(SwingConstants.CENTER);
+        painelItemAtual.add(lblItemAtual, BorderLayout.CENTER);
+      //<-
+
         JPanel entrada = new JPanel(new GridLayout(1, 4, 10, 10));
         entrada.add(new JLabel("CÓDIGO DE BARRAS / ID:"));
         entrada.add(txtCodigoBarras);
@@ -102,7 +117,17 @@ public class CaixasForm extends JPanel {
         pnlAcoes.add(Box.createRigidArea(new Dimension(0, 10)));
         pnlAcoes.add(btnVoltar);
 
-        add(pnlTopo, BorderLayout.NORTH);
+       // add(pnlTopo, BorderLayout.NORTH);
+       //->
+        JPanel topoCompleto = new JPanel();
+        topoCompleto.setLayout(new BoxLayout(topoCompleto, BoxLayout.Y_AXIS));
+
+        topoCompleto.add(pnlTopo);
+        topoCompleto.add(Box.createVerticalStrut(5));
+        topoCompleto.add(painelItemAtual);
+
+        add(topoCompleto, BorderLayout.NORTH);
+       //<-
         add(scrollCupom, BorderLayout.CENTER);
         add(pnlAcoes, BorderLayout.EAST);
 
@@ -144,6 +169,7 @@ public class CaixasForm extends JPanel {
         }
     }
 
+
     private void adicionarProdutoPeloCodigo() {
         String filtro = txtCodigoBarras.getText().trim();
         BigDecimal qtd;
@@ -158,6 +184,7 @@ public class CaixasForm extends JPanel {
         if (filtro.isEmpty()) return;
 
         try {
+            // O objeto 'p' nasce aqui dentro deste bloco 'try'
             Produto p = produtoController.buscarPorCodigoBarra(filtro);
 
             if (p != null) {
@@ -167,9 +194,14 @@ public class CaixasForm extends JPanel {
                     return;
                 }
 
+                // --- LÓGICA DE TRATAMENTO DE TEXTO (AQUI NÃO FICA VERMELHO) ---
+                String descFinal = p.getDescricao().replaceAll("_x[0-9A-Fa-f]{4}_", "").trim().toUpperCase();
+                String marcaFinal = (p.getMarca() != null) ? p.getMarca().trim().toUpperCase() : "";
+
+                // Usamos os textos limpos para criar o item da venda
                 ItemVenda item = new ItemVenda(
                         p.getId(),
-                        p.getDescricao(),
+                        descFinal, // Agora usamos o nome limpo
                         qtd,
                         p.getPrecoVenda()
                 );
@@ -179,16 +211,34 @@ public class CaixasForm extends JPanel {
 
                 vendaAtual.adicionarItem(item);
 
+                // Atualiza o visor usando o seu método (ele também precisa estar dentro do try)
+                atualizarItemAtual(p);
+
                 atualizarCupom();
                 atualizarExibicaoTotal();
                 limparCamposInput();
+            } else {
+                JOptionPane.showMessageDialog(this, "Produto não encontrado!");
             }
 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Erro: " + ex.getMessage());
         }
     }
+    //->
+private void atualizarItemAtual(Produto p) {
+    Toolkit.getDefaultToolkit().beep();
+    // Use toUpperCase() e remova o "R$" extra se o nf.format já trouxer
+    String texto = p.getDescricao().toUpperCase() + "  |  QTD: " + txtQuantidade.getText() +
+            "  |  " + nf.format(p.getPrecoVenda());
+    lblItemAtual.setText(texto);
 
+    lblItemAtual.setForeground(Color.YELLOW);
+    new javax.swing.Timer(150, e -> {
+        lblItemAtual.setForeground(Color.GREEN);
+    }).start();
+}
+//<-
     private void finalizarVenda() {
         if (vendaAtual.getItens().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Carrinho vazio!");
@@ -316,5 +366,8 @@ public class CaixasForm extends JPanel {
         areaCupom.setText("");
         txtTotalVenda.setText("R$ 0,00");
         limparCamposInput();
+        //->
+        lblItemAtual.setText("AGUARDANDO PRODUTO...");
+        //<-
     }
 }
