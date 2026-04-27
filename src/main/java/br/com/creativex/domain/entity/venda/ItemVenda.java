@@ -16,6 +16,10 @@ public class ItemVenda {
     private BigDecimal precoCustoMomento;
     private String cstFiscalMomento;
 
+    // Novos campos para tributação
+    private BigDecimal aliquotaAplicada;
+    private BigDecimal valorImpostoItem;
+
     public ItemVenda() {}
 
     public ItemVenda(Long idProduto, String nomeProduto,
@@ -54,4 +58,8 @@ public class ItemVenda {
     public void setPrecoCustoMomento(BigDecimal precoCustoMomento) { this.precoCustoMomento = precoCustoMomento; }
     public String getCstFiscalMomento() { return cstFiscalMomento; }
     public void setCstFiscalMomento(String cstFiscalMomento) { this.cstFiscalMomento = cstFiscalMomento; }
+    public BigDecimal getAliquotaAplicada() { return aliquotaAplicada; }
+    public void setAliquotaAplicada(BigDecimal aliquotaAplicada) { this.aliquotaAplicada = aliquotaAplicada; }
+    public BigDecimal getValorImpostoItem() { return valorImpostoItem; }
+    public void setValorImpostoItem(BigDecimal valorImpostoItem) { this.valorImpostoItem = valorImpostoItem; }
 }

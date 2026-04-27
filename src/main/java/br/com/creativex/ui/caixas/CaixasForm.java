@@ -209,6 +209,10 @@ public class CaixasForm extends JPanel {
                 item.setPrecoCustoMomento(p.getPrecoCusto());
                 item.setCstFiscalMomento(p.getCstIcms());
 
+                // Novos campos para tributação
+                item.setAliquotaAplicada(p.getAliquotaAplicada());
+                item.setValorImpostoItem(p.getValorImpostoItem());
+
                 vendaAtual.adicionarItem(item);
 
                 // Atualiza o visor usando o seu método (ele também precisa estar dentro do try)

@@ -211,11 +211,11 @@ public class ProdutoDAO {
 
     public Produto buscarPorCodigoBarra(String codigo) {
         return tx.execute(conn -> {
-            String sql = "SELECT * FROM tabela_produtos WHERE codigo_barra = ? LIMIT 1";
+            String sql = "SELECT * FROM vw_pdv_bipagem WHERE codigo_barra = ? LIMIT 1";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, codigo);
                 try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) return mapear(rs);
+                    if (rs.next()) return mapearFromView(rs);
                 }
             }
             return null;
@@ -266,33 +266,36 @@ public class ProdutoDAO {
         p.setCodigoBarra(rs.getString("codigo_barra"));
         p.setDescricao(rs.getString("descricao"));
         p.setMarca(rs.getString("marca"));
-        p.setAtributos(rs.getString("atributos"));
-        p.setUnidadeMedida(rs.getString("unidade_medida"));
-        p.setCategoria(rs.getString("categoria"));
-        p.setCodGrupo(rs.getInt("cod_grupo"));
-        p.setGrupo(rs.getString("grupo"));
-
-        String tipoBalanca = rs.getString("tipo_balanca");
-        if (tipoBalanca != null && !tipoBalanca.isEmpty()) {
-            p.setTipoBalanca(tipoBalanca.charAt(0));
-        }
-
-        p.setQuantidadeEstoque(rs.getBigDecimal("quantidade_estoque"));
         p.setPrecoCusto(rs.getBigDecimal("preco_custo"));
         p.setPrecoVenda(rs.getBigDecimal("preco_venda"));
-        p.setNcm(rs.getString("ncm"));
-        p.setCest(rs.getString("cest"));
-        p.setCfopPadrao(rs.getString("cfop_padrao"));
-        p.setUnidadeTributavel(rs.getString("unidade_tributavel"));
-        p.setCeanTributavel(rs.getString("cean_tributavel"));
+        p.setQuantidadeEstoque(rs.getBigDecimal("quantidade_estoque"));
         p.setCstIcms(rs.getString("cst_icms"));
-        p.setAliquotaIcms(rs.getBigDecimal("aliquota_icms"));
-        p.setCstPis(rs.getString("cst_pis"));
-        p.setPpis(rs.getBigDecimal("ppis"));
-        p.setCstCofins(rs.getString("cst_cofins"));
-        p.setPcofins(rs.getBigDecimal("pcofins"));
-        p.setDataCadastro(rs.getTimestamp("data_cadastro"));
-        p.setLoja(rs.getString("loja"));
+
+        // Novos campos da View para cálculo de impostos
+        p.setAliquotaAplicada(rs.getBigDecimal("aliquota_aplicada"));
+        p.setValorImpostoItem(rs.getBigDecimal("valor_imposto_item"));
+
+        return p;
+    }
+
+    // ==============================
+    // MAPEAR DA VIEW (PARA CAIXAS)
+    // ==============================
+    private Produto mapearFromView(ResultSet rs) throws SQLException {
+
+        Produto p = new Produto();
+        p.setId(rs.getLong("id"));
+        p.setCodigoBarra(rs.getString("codigo_barra"));
+        p.setDescricao(rs.getString("descricao"));
+        p.setMarca(rs.getString("marca"));
+        p.setPrecoCusto(rs.getBigDecimal("preco_custo"));
+        p.setPrecoVenda(rs.getBigDecimal("preco_venda"));
+        p.setQuantidadeEstoque(rs.getBigDecimal("quantidade_estoque"));
+        p.setCstIcms(rs.getString("cst_icms"));
+
+        // Novos campos da View para cálculo de impostos
+        p.setAliquotaAplicada(rs.getBigDecimal("aliquota_aplicada"));
+        p.setValorImpostoItem(rs.getBigDecimal("valor_imposto_item"));
 
         return p;
     }
