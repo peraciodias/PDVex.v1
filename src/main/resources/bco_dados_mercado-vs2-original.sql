@@ -22,6 +22,31 @@
 
 --executar essa linha após criar as tabelas -> ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO pera;
 
+
+--Para executar via linha de comando:
+--psql -h localhost -U seu_usuario -d seu_banco -f schema_banco.sql.
+--Ou simplesmente copie e cole no Query Tool do pgAdmin 4 ou DBeaver.
+
+-- SCRIPT DE CRIAÇÃO - POSTGRESQL
+-- Data: 05/04/2026
+
+-- Limpeza opcional (CUIDADO: remove os dados se já existirem)
+-- DROP SCHEMA public CASCADE;
+-- CREATE SCHEMA public;
+-- Transfere a propriedade de todas as tabelas no esquema public para o pera
+-- Isso garante que ele possa fazer SELECT, INSERT, UPDATE e DELETE sem restrições
+
+--executar essa linha após criar as tabelas -> GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO pera;
+
+-- MUITO IMPORTANTE: Garante permissão nas Sequências (os IDs automáticos)
+-- Sem isso, o Java falha ao tentar gerar um novo ID de venda
+
+--executar essa linha após criar as tabelas -> GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO pera;
+
+-- Define que todas as tabelas criadas no futuro também pertencerão ao pera
+
+--executar essa linha após criar as tabelas -> ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO pera;
+
 --------------------------------------------------------------------------------
 -- 1. TABELAS SEM DEPENDÊNCIAS (TABELAS PAI)
 --------------------------------------------------------------------------------
@@ -108,6 +133,7 @@ CREATE TABLE public.tabela_fornecedores (
 CREATE TABLE public.tabela_produtos (
     id BIGSERIAL PRIMARY KEY,
     codigo_barra VARCHAR(20) NOT NULL UNIQUE,
+    origem VARCHAR(1) NOT NULL,
     descricao VARCHAR(50) NOT NULL,
     marca VARCHAR(50),
     atributos VARCHAR(50),
@@ -131,7 +157,7 @@ CREATE TABLE public.tabela_produtos (
     cst_cofins VARCHAR(2),
     pcofins NUMERIC(5,2) DEFAULT 0.00,
     data_cadastro TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    loja VARCHAR(50) DEFAULT 'Sede'
+    loja VARCHAR(50) DEFAULT 'MATRIZ'
 );
 
 -- Tabela de Apoio necessária para as chaves estrangeiras de Venda

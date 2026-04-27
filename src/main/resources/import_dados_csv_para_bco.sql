@@ -123,10 +123,9 @@ WITH (
     data_cadastro
 )
 FROM '/tmp/dados_fornecedores.csv'
-WITH (
-    FORMAT CSV,
-    HEADER TRUE,
-    DELIMITER ';',
-    NULL '',
-    ENCODING 'UTF8'
-);
+WITH (FORMAT CSV, HEADER TRUE, DELIMITER ';',  NULL '',  ENCODING 'UTF8' );
+--atenção 
+--Após rodar os COPY acima, execute isto
+--para "entregar as chaves" de volta para o usuário 'pera'do sistema:
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO pera;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO pera;
