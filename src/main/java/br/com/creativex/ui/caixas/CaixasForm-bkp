@@ -16,13 +16,12 @@ import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter; // Adicionado para melhor legibilidade
-import java.util.Locale;
 
 public class CaixasForm extends JPanel {
-
+//-> 25/04
     private JPanel painelItemAtual;
     private JLabel lblItemAtual;
+//<-
     private JTextField txtCodigoBarra, txtQuantidade, txtTotalVenda;
     private JTextArea areaCupom;
     private JButton btnFinalizar, btnRemoverItem, btnVoltar;
@@ -34,8 +33,7 @@ public class CaixasForm extends JPanel {
     private final ProdutoController produtoController;
 
     private Venda vendaAtual = new Venda();
-    private final NumberFormat nf = NumberFormat.getCurrencyInstance(Locale.of("pt", "BR"));
-    private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+    private final NumberFormat nf = NumberFormat.getCurrencyInstance(java.util.Locale.of("pt", "BR"));
 
     public CaixasForm(Usuario usuario, MainWindow mainWindow) {
         this.usuario = usuario;
@@ -60,7 +58,7 @@ public class CaixasForm extends JPanel {
         txtQuantidade.setFont(new Font("SansSerif", Font.BOLD, 18));
 
         JPanel pnlTopo = new JPanel(new BorderLayout());
-
+      //->
         painelItemAtual = new JPanel(new BorderLayout());
         painelItemAtual.setBackground(Color.BLACK);
         painelItemAtual.setPreferredSize(new Dimension(100, 60));
@@ -70,6 +68,7 @@ public class CaixasForm extends JPanel {
         lblItemAtual.setFont(new Font("Monospaced", Font.BOLD, 26));
         lblItemAtual.setHorizontalAlignment(SwingConstants.CENTER);
         painelItemAtual.add(lblItemAtual, BorderLayout.CENTER);
+      //<-
 
         JPanel entrada = new JPanel(new GridLayout(1, 4, 10, 10));
         entrada.add(new JLabel("CÓDIGO DE BARRAS / ID:"));
@@ -83,6 +82,7 @@ public class CaixasForm extends JPanel {
         pnlTopo.add(entrada, BorderLayout.CENTER);
         pnlTopo.add(lblOperador, BorderLayout.EAST);
 
+        // ÁREA DE CUPOM
         areaCupom = new JTextArea();
         areaCupom.setEditable(false);
         areaCupom.setFont(new Font("Monospaced", Font.PLAIN, 14));
@@ -90,6 +90,7 @@ public class CaixasForm extends JPanel {
 
         JScrollPane scrollCupom = new JScrollPane(areaCupom);
 
+        // PAINEL DE AÇÕES
         JPanel pnlAcoes = new JPanel();
         pnlAcoes.setLayout(new BoxLayout(pnlAcoes, BoxLayout.Y_AXIS));
         pnlAcoes.setPreferredSize(new Dimension(250, 0));
@@ -104,7 +105,6 @@ public class CaixasForm extends JPanel {
         btnFinalizar = new JButton("FINALIZAR (F12)");
         btnFinalizar.setBackground(new Color(0, 153, 51));
         btnFinalizar.setForeground(Color.WHITE);
-        btnFinalizar.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         btnRemoverItem = new JButton("Remover Item (DEL)");
         btnVoltar = new JButton("Voltar");
@@ -118,13 +118,17 @@ public class CaixasForm extends JPanel {
         pnlAcoes.add(Box.createRigidArea(new Dimension(0, 10)));
         pnlAcoes.add(btnVoltar);
 
+       // add(pnlTopo, BorderLayout.NORTH);
+       //->
         JPanel topoCompleto = new JPanel();
         topoCompleto.setLayout(new BoxLayout(topoCompleto, BoxLayout.Y_AXIS));
+
         topoCompleto.add(pnlTopo);
         topoCompleto.add(Box.createVerticalStrut(5));
         topoCompleto.add(painelItemAtual);
 
         add(topoCompleto, BorderLayout.NORTH);
+       //<-
         add(scrollCupom, BorderLayout.CENTER);
         add(pnlAcoes, BorderLayout.EAST);
 
@@ -139,92 +143,129 @@ public class CaixasForm extends JPanel {
     }
 
     private void configurarAtalhos() {
-        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_F12, 0), "finalizar");
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_F12, 0), "finalizar");
+
         this.getActionMap().put("finalizar", new AbstractAction() {
             @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) { finalizarVenda(); }
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                finalizarVenda();
+            }
         });
 
-        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "remover");
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "remover");
+
         this.getActionMap().put("remover", new AbstractAction() {
             @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) { removerItemPorSeqDialog(); }
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                removerItemPorSeqDialog();
+            }
         });
     }
 
     private void voltarParaHome() {
-        if (mainWindow != null) mainWindow.abrirModulo(new HomeScreen());
+        if (mainWindow != null) {
+            mainWindow.abrirModulo(new HomeScreen());
+        }
     }
+
 
     private void adicionarProdutoPeloCodigo() {
         String filtro = txtCodigoBarra.getText().trim();
-
-        
-        if (filtro.isBlank()) return;
-
         BigDecimal qtd;
+
         try {
             qtd = new BigDecimal(txtQuantidade.getText().replace(",", "."));
-            if (qtd.compareTo(BigDecimal.ZERO) <= 0) {
-                JOptionPane.showMessageDialog(this, "Quantidade deve ser maior que zero!");
-                return;
-            }
+//
+                if (qtd.compareTo(BigDecimal.ZERO) <= 0) {
+                   JOptionPane.showMessageDialog(this, "Quantidade deve ser maior que zero!");
+                  return;
+                }
+//
+
+
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Quantidade inválida!");
             return;
         }
 
+        //
+        if (filtro.isBlank()) {
+           JOptionPane.showMessageDialog(this, "Informe o código do produto.");
+            return;
+        }
+        //
+
         try {
+            // O objeto 'p' nasce aqui dentro deste bloco 'try'
             Produto p = produtoController.buscarPorCodigoBarra(filtro);
 
             if (p != null) {
                 if (p.getQuantidadeEstoque().compareTo(qtd) < 0) {
-                    JOptionPane.showMessageDialog(this, "Estoque insuficiente! Disponível: " + p.getQuantidadeEstoque());
+                    JOptionPane.showMessageDialog(this,
+                            "Estoque insuficiente!\nDisponível: " + p.getQuantidadeEstoque());
                     return;
                 }
 
+                // --- LÓGICA DE TRATAMENTO DE TEXTO (AQUI NÃO FICA VERMELHO) ---
                 String descFinal = p.getDescricao().replaceAll("_x[0-9A-Fa-f]{4}_", "").trim().toUpperCase();
-                
-                // Garante que o código de barras nunca seja null para não sujar o cupom
-                String codBarraSeguro = (p.getCodigoBarra() != null) ? p.getCodigoBarra() : "SEM CÓDIGO";
+                String marcaFinal = (p.getMarca() != null) ? p.getMarca().trim().toUpperCase() : "";
 
-                // Trava de segurança para preço negativo (vinda do banco)
-                BigDecimal precoSeguro = (p.getPrecoVenda() != null && p.getPrecoVenda().compareTo(BigDecimal.ZERO) > 0) 
-                                         ? p.getPrecoVenda() : BigDecimal.ZERO;
+                // Usamos os textos limpos para criar o item da venda
+                ItemVenda item = new ItemVenda(
+                        p.getId(),
+                        descFinal, // Agora usamos o nome limpo
+                        qtd,
+                        p.getPrecoVenda()
+                );
+//
+                        item.setCodigoBarra(p.getCodigoBarra()); 
+//
 
-                ItemVenda item = new ItemVenda(p.getId(), descFinal, qtd, precoSeguro);
-                item.setCodigoBarra(codBarraSeguro);
+
                 item.setPrecoCustoMomento(p.getPrecoCusto());
                 item.setCstFiscalMomento(p.getCstIcms());
+
+                // Novos campos para tributação
                 item.setAliquotaAplicada(p.getAliquotaAplicada());
                 item.setValorImpostoItem(p.getValorImpostoItem());
 
                 vendaAtual.adicionarItem(item);
 
+                // Atualiza o visor usando o seu método (ele também precisa estar dentro do try)
                 atualizarItemAtual(p);
+
                 atualizarCupom();
                 atualizarExibicaoTotal();
                 limparCamposInput();
             } else {
                 JOptionPane.showMessageDialog(this, "Produto não encontrado!");
-                txtCodigoBarra.requestFocus();
             }
+
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Erro: " + ex.getMessage());
         }
     }
+    //->
+private void atualizarItemAtual(Produto p) {
+    Toolkit.getDefaultToolkit().beep();
+    // Use toUpperCase() e remova o "R$" extra se o nf.format já trouxer
+    String texto = p.getDescricao().toUpperCase() + "  |  QTD: " + txtQuantidade.getText() +
+            "  |  " + nf.format(p.getPrecoVenda());
+    lblItemAtual.setText(texto);
 
-    private void atualizarItemAtual(Produto p) {
-        Toolkit.getDefaultToolkit().beep();
-        String texto = p.getDescricao().toUpperCase() + " | QTD: " + txtQuantidade.getText() + " | " + nf.format(p.getPrecoVenda());
-        lblItemAtual.setText(texto);
-        lblItemAtual.setForeground(Color.YELLOW);
-
-        Timer timer = new Timer(150, e -> lblItemAtual.setForeground(Color.GREEN));
-        timer.setRepeats(false);
-        timer.start();
-    }
-
+    lblItemAtual.setForeground(Color.YELLOW);
+    //
+     Timer timer = new Timer(150, e -> {
+         lblItemAtual.setForeground(Color.GREEN);
+        });
+     timer.setRepeats(false);
+     timer.start();
+    //
+}
+//<-
     private void finalizarVenda() {
         if (vendaAtual.getItens().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Carrinho vazio!");
@@ -232,40 +273,60 @@ public class CaixasForm extends JPanel {
         }
 
         vendaAtual.recalcularTotais();
+
         Window window = SwingUtilities.getWindowAncestor(this);
         Frame parent = (window instanceof Frame) ? (Frame) window : null;
-        
         FinalizarVendaDialog dialog = new FinalizarVendaDialog(parent, vendaAtual.getTotalLiquido());
         dialog.setVisible(true);
 
-        if (!dialog.isVendaConfirmada()) return;
+        if (!dialog.isVendaConfirmada()) {
+            return;
+        }
 
         try {
-            BigDecimal valorPago = dialog.getValorPago();
-            if (valorPago == null || valorPago.compareTo(vendaAtual.getTotalLiquido()) < 0) {
-                JOptionPane.showMessageDialog(this, "Valor pago insuficiente ou inválido.");
+            if (dialog.getMetodoSelecionado() == null) {
+                JOptionPane.showMessageDialog(this, "Selecione a forma de pagamento.");
                 return;
             }
 
+            BigDecimal valorPago = dialog.getValorPago();
+        //
+        if (valorPago == null || valorPago.compareTo(BigDecimal.ZERO) <= 0) {
+           JOptionPane.showMessageDialog(this, "Valor pago inválido.");
+         return;
+        }
+        //
             vendaAtual.setIdUsuario(usuario.getId());
             vendaAtual.setMetodoPagamento(dialog.getMetodoSelecionado());
             vendaAtual.setValorPago(valorPago);
             vendaAtual.setTroco(dialog.getTroco());
 
+            if (valorPago.compareTo(vendaAtual.getTotalLiquido()) < 0) {
+                JOptionPane.showMessageDialog(this,
+                        "Valor pago é menor que o total da venda!");
+                return;
+            }
+
             caixaController.finalizarVenda(vendaAtual);
-            JOptionPane.showMessageDialog(this, "Venda concluída com sucesso!");
+
+            JOptionPane.showMessageDialog(this, "Venda concluída!");
             limparVenda();
 
         } catch (Exception ex) {
             String mensagem = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
-            JOptionPane.showMessageDialog(this, "Erro ao gravar venda: " + mensagem);
+            JOptionPane.showMessageDialog(this, "Erro: " + mensagem);
         }
     }
 
     private void removerItemPorSeqDialog() {
-        if (vendaAtual.getItens().isEmpty()) return;
+        if (vendaAtual.getItens().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Nenhum item no cupom!");
+            return;
+        }
 
-        String input = JOptionPane.showInputDialog(this, "Número SEQ do item a remover:");
+        String input = JOptionPane.showInputDialog(this,
+                "Digite o número SEQ do item a remover:");
+
         if (input == null || input.trim().isEmpty()) return;
 
         try {
@@ -281,53 +342,62 @@ public class CaixasForm extends JPanel {
             JOptionPane.showMessageDialog(this, "SEQ inexistente!");
             return;
         }
+
         vendaAtual.getItens().remove(seq - 1);
+
         vendaAtual.recalcularTotais();
         atualizarCupom();
         atualizarExibicaoTotal();
-        txtCodigoBarra.requestFocus();
     }
 
-    private void atualizarCupom() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("              ").append("NOME DA SUA LOJA").append("\n");
-        sb.append("      CNPJ: 00.000.000/0001-00  IE: 123456789\n");
-        sb.append("-------------------------------------------------------------------\n");
-        sb.append(String.format("%-4s %-14s %-20s %-6s %-12s\n", "SEQ", "CÓDIGO", "DESCRIÇÃO", "QTD", "SUBTOTAL"));
-        sb.append("-------------------------------------------------------------------\n");
+//-------------------------------------------------------------------
 
-        int seq = 1;
-        BigDecimal totalTributosReal = BigDecimal.ZERO;
+private void atualizarCupom() {
+    StringBuilder sb = new StringBuilder();
+    
+    // Cabeçalho (Mantenha conforme sua necessidade)
+    sb.append("              ").append("NOME DA SUA LOJA").append("\n");
+    sb.append("      CNPJ: 00.000.000/0001-00  IE: 123456789\n");
+    sb.append("-------------------------------------------------------------------\n");
+    sb.append(String.format("%-4s %-8s %-20s %-6s %-12s\n", "SEQ", "CÓD", "DESC", "QTD", "VALOR"));
+    sb.append("-------------------------------------------------------------------\n");
 
-        for (ItemVenda item : vendaAtual.getItens()) {
-            sb.append(String.format("%03d  %-14s %-20.20s %-6s %-12s\n",
-                    seq++,
-                    item.getCodigoBarra(),
-                    item.getNomeProduto(),
-                    item.getQuantidade(),
-                    nf.format(item.getSubtotal())));
+    int seq = 1;
+    BigDecimal totalTributosReal = BigDecimal.ZERO; // Inicia o somador real
 
-            // PROTEÇÃO CRÍTICA: Verifica se o imposto é nulo antes de somar
-            if (item.getValorImpostoItem() != null) {
-                BigDecimal impostoTotalItem = item.getValorImpostoItem().multiply(item.getQuantidade());
-                totalTributosReal = totalTributosReal.add(impostoTotalItem);
-            } 
-            // Se for nulo, o sistema simplesmente soma ZERO e não trava!
+    for (ItemVenda item : vendaAtual.getItens()) {
+
+        sb.append(String.format( 
+          "%03d  %-8s %-20.20s %-6s %-12s\n",
+            seq++,
+            item.getCodigoBarra(),
+            item.getNomeProduto(),
+            item.getQuantidade(),
+        nf.format(item.getSubtotal())
+        ));
+
+        // SOMA O IMPOSTO REAL VINDO DO BANCO (vw_pdv_bipagem)
+        if (item.getValorImpostoItem() != null) {
+            // Multiplica o valor unitário do imposto pela quantidade vendida
+            BigDecimal impostoTotalItem = item.getValorImpostoItem().multiply(item.getQuantidade());
+            totalTributosReal = totalTributosReal.add(impostoTotalItem);
         }
-
-        sb.append("-------------------------------------------------------------------\n");
-        sb.append(String.format("TOTAL LIQUIDO: %s\n", nf.format(vendaAtual.getTotalLiquido())));
-        sb.append(String.format("VALOR PAGO:    %s\n", nf.format(vendaAtual.getValorPago() != null ? vendaAtual.getValorPago() : BigDecimal.ZERO)));
-        sb.append(String.format("TROCO:         %s\n", nf.format(vendaAtual.getTroco() != null ? vendaAtual.getTroco() : BigDecimal.ZERO)));
-        sb.append("-------------------------------------------------------------------\n");
-        sb.append("EMISSÃO: ").append(dtf.format(LocalDateTime.now())).append("\n");
-        sb.append("Trib. aprox.: ").append(nf.format(totalTributosReal)).append(" (Lei Fed. 12.741/12)\n");
-        sb.append("       OBRIGADO PELA PREFERENCIA!       \n");
-
-        areaCupom.setText(sb.toString());
-        areaCupom.setCaretPosition(areaCupom.getDocument().getLength()); // Scroll automático para o fim
     }
 
+    sb.append("-------------------------------------------------------------------\n");
+    sb.append(String.format("TOTAL LIQUIDO: %s\n", nf.format(vendaAtual.getTotalLiquido())));
+    sb.append(String.format("VALOR PAGO:    %s\n", nf.format(vendaAtual.getValorPago() != null ? vendaAtual.getValorPago() : BigDecimal.ZERO)));
+    sb.append(String.format("TROCO:         %s\n", nf.format(vendaAtual.getTroco() != null ? vendaAtual.getTroco() : BigDecimal.ZERO)));
+    sb.append("-------------------------------------------------------------------\n");
+    
+    // EXIBE O VALOR CALCULADO COM BASE NA TABELA_TRIBUTARIA
+    sb.append("DATA: ").append(LocalDateTime.now()).append("\n");
+    sb.append("Trib. aprox.: ").append(nf.format(totalTributosReal)).append(" (Lei Fed. 12.741/12)\n");
+    sb.append("       OBRIGADO PELA PREFERENCIA!       \n");
+
+    areaCupom.setText(sb.toString());
+}
+//-------------------------------------------------------------------
     private void atualizarExibicaoTotal() {
         vendaAtual.recalcularTotais();
         txtTotalVenda.setText(nf.format(vendaAtual.getTotalLiquido()));
@@ -343,7 +413,9 @@ public class CaixasForm extends JPanel {
         vendaAtual = new Venda();
         areaCupom.setText("");
         txtTotalVenda.setText("R$ 0,00");
-        lblItemAtual.setText("AGUARDANDO PRODUTO...");
         limparCamposInput();
+        //->
+        lblItemAtual.setText("AGUARDANDO PRODUTO...");
+        //<-
     }
 }
