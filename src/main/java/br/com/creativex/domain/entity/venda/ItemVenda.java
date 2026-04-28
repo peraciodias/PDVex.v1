@@ -11,7 +11,7 @@ public class ItemVenda {
     private BigDecimal precoUnitario = BigDecimal.ZERO;
     private BigDecimal descontoItem = BigDecimal.ZERO;
     private BigDecimal subtotal = BigDecimal.ZERO;
-
+    private String codigoBarra;
     // Snapshots (histórico)
     private BigDecimal precoCustoMomento;
     private String cstFiscalMomento;
@@ -45,6 +45,10 @@ public class ItemVenda {
     // =========================
     public Long getIdProduto() { return idProduto; }
     public void setIdProduto(Long idProduto) { this.idProduto = idProduto; }
+
+    public String getCodigoBarra() { return codigoBarra; }
+    public void setCodigoBarra(String codigoBarra) { this.codigoBarra = codigoBarra; }
+
     public String getNomeProduto() { return nomeProduto; }
     public void setNomeProduto(String nomeProduto) { this.nomeProduto = nomeProduto; }
     public BigDecimal getQuantidade() { return quantidade; }
