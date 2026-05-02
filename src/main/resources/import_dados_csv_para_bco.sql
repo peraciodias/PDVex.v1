@@ -13,42 +13,9 @@ WITH (
     NULL '',
     ENCODING 'UTF8'
 );
---produtos
-\copy tabela_produtos (
-    codigo_barra,
-    descricao,
-    marca,
-    atributos,
-    unidade_medida,
-    categoria,
-    cod_grupo,
-    grupo,
-    tipo_balanca,
-    quantidade_estoque,
-    preco_custo,
-    preco_venda,
-    ncm,
-    cest,
-    cfop_padrao,
-    unidade_tributavel,
-    cean_tributavel,
-    cst_icms,
-    aliquota_icms,
-    cst_pis,
-    ppis,
-    cst_cofins,
-    pcofins,
-    data_cadastro,
-    loja
-)
-FROM '/tmp/dados_produtos.csv'
-WITH (
-    FORMAT CSV,
-    HEADER TRUE,
-    DELIMITER ';',
-    NULL '',
-    ENCODING 'UTF8'
-);
+--produtos- AJUSTAR O caminho- no windows use '\' e no linux use '/' 
+COPY public.tabela_produtos (codigo_barra, origem, descricao, marca, atributos, unidade_medida, categoria, cod_grupo, grupo, tipo_balanca, quantidade_estoque, preco_custo,  preco_venda, ncm, cest, cfop_padrao, unidade_tributavel, cean_tributavel, cst_icms, aliquota_icms, cst_pis, ppis, cst_cofins, pcofins, data_cadastro, loja)
+FROM 'C:\Users\Public\PRODUTOS.CSV' WITH (FORMAT CSV, HEADER, DELIMITER ';', ENCODING 'UTF8');
 
 --clientes
 \copy tabela_clientes (
@@ -123,10 +90,9 @@ WITH (
     data_cadastro
 )
 FROM '/tmp/dados_fornecedores.csv'
-WITH (
-    FORMAT CSV,
-    HEADER TRUE,
-    DELIMITER ';',
-    NULL '',
-    ENCODING 'UTF8'
-);
+WITH (FORMAT CSV, HEADER TRUE, DELIMITER ';',  NULL '',  ENCODING 'UTF8' );
+--atenção 
+--Após rodar os COPY acima, execute isto
+--para "entregar as chaves" de volta para o usuário 'pera'do sistema:
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO pera;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO pera;
