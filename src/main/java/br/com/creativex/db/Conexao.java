@@ -24,7 +24,7 @@ public class Conexao {
     // 3. Removidos parâmetros específicos do MySQL (?useSSL...)
     private static final String URL = "jdbc:postgresql://localhost:5432/bco_dados_mercado";
     private static final String USER = "postgres";
-    private static final String PASSWORD = "POSTROOT"; // 🔹 Coloque a senha do usuário 'pera' definida no Postgres
+    private static final String PASSWORD = "postgres"; // 🔹 Coloque a senha do usuário 'pera' definida no Postgres
 
     /**
      * Obtém uma conexão ativa com o banco de dados PostgreSQL.
